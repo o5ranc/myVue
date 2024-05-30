@@ -20,6 +20,7 @@ export default defineComponent({
         let result = countStore.increment()
 
         console.log('### ran doubleCount : ', doubleCount)
+        console.log('### ran1 commit test log')
 
         return {
             count,
