@@ -1,34 +1,42 @@
 <template>
-    <div><span>Pinia Test</span></div>    
-    <div><span>count : {{ count }}</span></div>    
-    <div><span>doubleCount : {{ doubleCount }}</span></div>    
-    <div><span>result : {{ result }}</span></div>    
-    <div><span>countStore : {{ countStore }}</span></div>    
+	<div id="app">
+		<!-- <ProductList /> -->
+		<!-- <ShoppingCart /> -->
+		<TestView />
+	</div>
+
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue'
-import { storeToRefs } from 'pinia'
-import { useCounterStore } from '@/stores/counter' 
+import { defineComponent } from 'vue';
+// import { storeToRefs } from 'pinia'
+// import { useCounterStore } from '@/stores/counter'
+// import ProductList from './components/ProductList.vue'
+// import ShoppingCart from './components/ShoppingCart.vue'
+import TestView from './views/testViews/testView.vue'
 
 export default defineComponent({
-    setup() {
-        const countStore = useCounterStore()
-        const { count, doubleCount } = storeToRefs(countStore)
+	components: {
+		// ProductList,
+		// ShoppingCart
+		TestView
+	},
+	setup() {
+		// const countStore = useCounterStore()
+		// const { count, doubleCount } = storeToRefs(countStore)
 
-        count.value++
-        let result = countStore.increment()
+		// count.value++
+		// let result = countStore.increment()
 
-        console.log('### ran doubleCount : ', doubleCount)
-        console.log('### ran1 commit test log')
+		// console.log('### ran doubleCount : ', doubleCount)
+		// console.log('### ran1 commit test log')
 
-        return {
-            count,
-            doubleCount,
-            result,
-            countStore
-        }
-    },
+		return {
+			// count,
+			// doubleCount,
+			// result,
+			// countStore
+		}
+	},
 })
 </script>
-

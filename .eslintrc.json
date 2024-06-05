@@ -1,3 +1,4 @@
+/* eslint-disable */
 {
     // env : 프로젝트 환경 설정
     "env": {
@@ -8,8 +9,7 @@
     },
     // extends : ESLint 확장
     "extends": [
-        "plugin:vue/essential",
-        "standard"
+        "plugin:vue/essential"
     ],
     "parserOptions": {
     "ecmaVersion": 12,
