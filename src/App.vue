@@ -2,24 +2,26 @@
 	<div id="app">
 		<!-- <ProductList /> -->
 		<!-- <ShoppingCart /> -->
-		<TestView />
+		<!-- <TestView></TestView> -->
+		<ElementView></ElementView>
 	</div>
-
 </template>
 
 <script lang="ts">
-import { defineComponent } from 'vue';
+import { defineComponent } from "vue";
 // import { storeToRefs } from 'pinia'
-// import { useCounterStore } from '@/stores/counter'
+// import { useCounterStore } from '@/store/counter'
 // import ProductList from './components/ProductList.vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
-import TestView from './views/testViews/testView.vue'
+import TestView from "./views/testViews/TestView.vue"
+import ElementView from "./views/testViews/ElementView.vue"
 
 export default defineComponent({
 	components: {
 		// ProductList,
 		// ShoppingCart
-		TestView
+		// TestView,
+		ElementView
 	},
 	setup() {
 		// const countStore = useCounterStore()

@@ -2,9 +2,9 @@
 {
     // env : 프로젝트 환경 설정
     "env": {
-        "browser": true,
-        "commonjs": true,
-        "es2021": true,
+        // "browser": true,
+        // "commonjs": true,
+        // "es2021": true,
         "node": true
     },
     // extends : ESLint 확장
@@ -12,8 +12,9 @@
         "plugin:vue/essential"
     ],
     "parserOptions": {
-    "ecmaVersion": 12,
-    "parser": "@typescript-eslint/parser"
+        // "ecmaVersion": 12,
+        // "parser": "@typescript-eslint/parser"
+        "ecmaVersion": 2020
     },
     "plugins": [
         "vue",
@@ -21,5 +22,20 @@
     ],
     // rules : 프로젝트 내에서 강제할 규칙 정의
     "rules": {
+        "@typescript-eslint/explicit-module-boundary-types": "off",
+        "vue/no-use-v-if-with-v-for": "off",
+        "prettier/prettier": ["off", {
+            "singleQuote": true,
+            "semi": false,
+            "useTabs": false,
+            "tabWidth": 2,
+            "trailingComma": "false",
+            "bracketSpacing": true,
+            "arrowParens": "avoid",
+            "printWidth": 120,
+            "singleAttributePerLine": true,
+            "jsxBracketSameLine": true,
+            "htmlWhitespaceSensitivity": "ignore"
+        }]
     }
 }
