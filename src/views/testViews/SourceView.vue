@@ -99,7 +99,7 @@ import { javascript } from '@codemirror/lang-javascript'
 import { css } from '@codemirror/lang-css'
 import { markdown } from '@codemirror/lang-markdown'
 import { oneDark, oneDarkTheme } from '@codemirror/theme-one-dark'
-import { reactive, readonly, ref, nextTick } from 'vue'
+import { reactive, readonly, ref, nextTick, defineComponent } from 'vue'
 import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 import type { ElTable } from 'element-plus'
 
@@ -110,7 +110,7 @@ interface State {
   isTableExpanded: boolean
 }
 
-export default {
+export default defineComponent({
   components: {
     Codemirror,
   },
@@ -284,7 +284,7 @@ console.log(result); // 출력 결과: 9`)
       ArrowUp,
     }
   },
-}
+})
 </script>
 
 <style lang="css" scoped>

@@ -4,7 +4,8 @@
     <!-- <ShoppingCart /> -->
     <!-- <TestView /> -->
     <!-- <ElTableTestView /> -->
-    <SourceView />
+    <!-- <SourceView /> -->
+    <SourceTreeView />
   </div>
 </template>
 
@@ -16,7 +17,8 @@ import { defineComponent } from 'vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
 // import TestView from './views/testViews/testView.vue'
 // import ElTableTestView from './views/testViews/elTableTestView.vue'
-import SourceView from './views/testViews/SourceView.vue'
+// import SourceView from './views/testViews/SourceView.vue'
+import SourceTreeView from './views/testViews/SourceTreeView.vue'
 
 export default defineComponent({
   components: {
@@ -24,7 +26,8 @@ export default defineComponent({
     // ShoppingCart
     // TestView,
     // ElTableTestView,
-    SourceView,
+    // SourceView,
+    SourceTreeView,
   },
   setup() {
     // const countStore = useCounterStore()
