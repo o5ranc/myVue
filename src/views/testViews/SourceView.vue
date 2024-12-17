@@ -55,13 +55,16 @@
         </el-button>
       </el-button-group>
     </div>
+    <IndexComponent :selectIndex="state.selectIndex" />
     <div class="table-section">
       <el-table
         ref="tableRef"
         :data="tableData"
         :max-height="state.tableMaxHeight"
         style="width: 100%"
+        :highlight-current-row="true"
         :header-cell-style="{ background: '#f5f7fa' }"
+        @row-click="onFileClick"
       >
         <el-table-column
           prop="date"
@@ -87,6 +90,13 @@
         />
       </div>
     </div>
+
+    <!-- 파일 비교 컴포넌트 추가 -->
+    <file-diff-viewer
+      :old-content="oldFileContent"
+      :new-content="newFileContent"
+    />
+    <InfiniteComponent />
   </div>
 </template>
 
@@ -99,20 +109,28 @@ import { javascript } from '@codemirror/lang-javascript'
 import { css } from '@codemirror/lang-css'
 import { markdown } from '@codemirror/lang-markdown'
 import { oneDark, oneDarkTheme } from '@codemirror/theme-one-dark'
-import { reactive, readonly, ref, nextTick, defineComponent } from 'vue'
+import { reactive, readonly, ref, nextTick, defineComponent, onMounted } from 'vue'
 import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 import type { ElTable } from 'element-plus'
+import FileDiffViewer from '@/components/FileDiffViewer.vue'
+import IndexComponent from '@/components/IndexComponent.vue'
+import InfiniteComponent from '@/components/InfiniteComponent.vue'
+import { getOldContent, getNewContent } from '../data/content.js'
 
-interface State {
+interface IState {
   extensions: Extension[]
   isSideView: boolean
   tableMaxHeight: number | undefined // number | undefined 타입 허용
   isTableExpanded: boolean
+  selectIndex: number
 }
 
 export default defineComponent({
   components: {
     Codemirror,
+    FileDiffViewer,
+    IndexComponent,
+    InfiniteComponent,
   },
 
   setup() {
@@ -136,12 +154,16 @@ export default defineComponent({
 
     const tableRef = ref<InstanceType<typeof ElTable> | null>(null)
 
-    const state = reactive<State>({
+    const state = reactive<IState>({
       extensions: [javascript(), preventEvent()],
       isSideView: true,
       tableMaxHeight: 250,
       isTableExpanded: false,
+      selectIndex: -1,
     })
+
+    const oldFileContent = ref('sdfasdfsdfsdfsfsdfsdfs')
+    const newFileContent = ref('sdfasdfsdfsdfsfsdfsdfs111121212121212112')
 
     const code = ref(`
 /* GitLab은 기본적으로 다음과 같은 폰트를 사용합니다:
@@ -195,7 +217,7 @@ console.log(result); // 출력 결과: 9`)
     //     }
 
     //     const onClickMDType = () => {
-    //       code.value = `# 가장큰 크기의 text로 변환
+    //       code.value = `# 가장큰 크기의 text로 변
     // ## 그다음 작은 크기위 text로 변환
     // ### 그다음 작은 크기의 text로 변환
     // #### 그다음 작은 크기의 text로 변환
@@ -243,6 +265,15 @@ console.log(result); // 출력 결과: 9`)
       },
     ])
 
+    interface IRow {
+      date: string
+      name: string
+      address: string
+    }
+    const onFileClick = (row: IRow) => {
+      state.selectIndex = tableData.value.indexOf(row)
+    }
+
     const toggleTableHeight = () => {
       state.isTableExpanded = !state.isTableExpanded
 
@@ -272,6 +303,56 @@ console.log(result); // 출력 결과: 9`)
       }
     }
 
+    const fetchFileContents = async () => {
+      try {
+        // API calls should be moved to composables or props
+        const response = await Promise.all([fetchOldFile(), fetchNewFile()])
+        oldFileContent.value = response[0]
+        newFileContent.value = response[1]
+      } catch (error) {
+        console.error('파일 내용을 불러오는데 실패했습니다:', error)
+      }
+    }
+
+    const fetchOldFile = async () => {
+      return new Promise<string>((resolve) => {
+        setTimeout(() => {
+          resolve(getOldContent())
+        }, 3000)
+      })
+    }
+
+    const fetchNewFile = async () => {
+      return new Promise<string>((resolve) => {
+        setTimeout(() => {
+          resolve(getNewContent())
+        }, 3000)
+      })
+    }
+
+    const compareFiles = async () => {
+      try {
+        await fetchFileContents() // 이전에 정의한 메서드 호출
+        // 필요한 경우 추가 로직
+      } catch (error) {
+        // 에러 처리
+        console.error('파일 비교 중 오류가 발생했습니다.')
+      }
+    }
+
+    // Add onMounted hook
+    onMounted(() => {
+      if (tableData.value.length > 0) {
+        // Set selectIndex to 0 (first row)
+        state.selectIndex = 0
+
+        // Optionally, you can also highlight the row in the table
+        if (tableRef.value) {
+          tableRef.value.setCurrentRow(tableData.value[0])
+        }
+      }
+    })
+
     return {
       state,
       code,
@@ -282,6 +363,12 @@ console.log(result); // 출력 결과: 9`)
       toggleTableHeight,
       ArrowDown,
       ArrowUp,
+      oldFileContent: '',
+      newFileContent: '',
+      fileId: '', // 파일 ID
+      oldVersion: '', // 이전 버전 번호
+      newVersion: '', // 현재 버전 번호
+      onFileClick,
     }
   },
 })
