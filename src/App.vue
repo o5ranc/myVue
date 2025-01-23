@@ -5,6 +5,7 @@
     <!-- <TestView /> -->
     <!-- <ElTableTestView /> -->
     <SourceView />
+     <!-- <CardListView/> -->
     <!-- <SourceTreeView /> -->
   </div>
 </template>
@@ -18,6 +19,7 @@ import { defineComponent } from 'vue'
 // import TestView from './views/testViews/testView.vue'
 // import ElTableTestView from './views/testViews/elTableTestView.vue'
 import SourceView from './views/testViews/SourceView.vue'
+// import CardListView from './views/testViews/CardListView.vue'
 // import SourceTreeView from './views/testViews/SourceTreeView.vue'
 
 export default defineComponent({
@@ -27,6 +29,7 @@ export default defineComponent({
     // TestView,
     // ElTableTestView,
     SourceView,
+    // CardListView,
     // SourceTreeView,
   },
   setup() {

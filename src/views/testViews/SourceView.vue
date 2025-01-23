@@ -1,5 +1,7 @@
 <template>
   <div>
+    
+
     <div>코드보기</div>
     <div class="nocopy">
       <!-- <button @click="onClickCSSType">css 코드</button>
@@ -97,7 +99,7 @@
       :new-content="newFileContent"
     />
     <InfiniteComponent />
-  </div>
+    </div>
 </template>
 
 <script lang="ts">
@@ -300,43 +302,6 @@ console.log(result); // 출력 결과: 9`)
         })
       } else {
         state.tableMaxHeight = 250
-      }
-    }
-
-    const fetchFileContents = async () => {
-      try {
-        // API calls should be moved to composables or props
-        const response = await Promise.all([fetchOldFile(), fetchNewFile()])
-        oldFileContent.value = response[0]
-        newFileContent.value = response[1]
-      } catch (error) {
-        console.error('파일 내용을 불러오는데 실패했습니다:', error)
-      }
-    }
-
-    const fetchOldFile = async () => {
-      return new Promise<string>((resolve) => {
-        setTimeout(() => {
-          resolve(getOldContent())
-        }, 3000)
-      })
-    }
-
-    const fetchNewFile = async () => {
-      return new Promise<string>((resolve) => {
-        setTimeout(() => {
-          resolve(getNewContent())
-        }, 3000)
-      })
-    }
-
-    const compareFiles = async () => {
-      try {
-        await fetchFileContents() // 이전에 정의한 메서드 호출
-        // 필요한 경우 추가 로직
-      } catch (error) {
-        // 에러 처리
-        console.error('파일 비교 중 오류가 발생했습니다.')
       }
     }
 

@@ -1,16 +1,23 @@
 <template>
-  <div class="infinite-container">
-    <div
-      v-for="num in state.numbers"
-      :key="num"
-      class="number-item"
-    >
-      {{ num }}
+  <div class="main-container">
+    <div class="numbers-container">
+      <div class="number-column"
+        v-for="(numArray, i) in state.numbers"
+        :key="'column-' + i"
+        :style="{ width: `${100 / state.numbers.length}%` }">
+        <div class="infinite-container">
+          <div v-for="(item, idx) in numArray" 
+            :key="'item-' + idx"
+            class="number-item">
+            {{ item }}
+          </div>
+          <div
+          :ref="el => observers[i] = el"
+          class="observer"
+        ></div>
+        </div>
+      </div>
     </div>
-    <div
-      ref="observer"
-      class="observer"
-    ></div>
   </div>
 </template>
 
@@ -23,52 +30,74 @@ export default defineComponent({
   },
 
   setup() {
-    const observer = ref<HTMLElement | null>(null)
+    const observers = ref<(HTMLElement | null)[]>([])
     const state = reactive({
-      numbers: Array.from({ length: 10 }, (_, i) => i + 1),
-      page: 1,
+      numbers: [
+        Array.from({ length: 10 }, (_, i) => i + 1),
+        Array.from({ length: 10 }, (_, i) => i + 1),
+        Array.from({ length: 10 }, (_, i) => i + 1),
+      ],
+      pages: [1, 1, 1], // 각 컬럼별 페이지 관리
     })
 
-    const loadMore = () => {
-      const nextPage = state.page + 1
-      const startNum = state.numbers.length + 1
+    const loadMore = (columnIndex: number) => {
+        console.log('@@@ loadMore columnIndex : ', columnIndex)
+      const nextPage = state.pages[columnIndex] + 1
+      const startNum = state.numbers[columnIndex].length + 1
       const newNumbers = Array.from({ length: 10 }, (_, i) => startNum + i)
-      state.numbers.push(...newNumbers)
-      state.page = nextPage
+      state.numbers[columnIndex].push(...newNumbers)
+      state.pages[columnIndex] = nextPage
     }
 
-    let intersectionObserver: IntersectionObserver | null = null
+    const intersectionObservers: IntersectionObserver[] = []
 
     onMounted(() => {
-      intersectionObserver = new IntersectionObserver(
-        (entries) => {
-          if (entries[0].isIntersecting) {
-            loadMore()
-          }
-        },
-        { threshold: 0.5 },
-      )
+      state.numbers.forEach((_, index) => {
+        const observer = new IntersectionObserver(
+          (entries) => {
+            if (entries[0].isIntersecting) {
+              loadMore(index)
+            }
+          },
+          { threshold: 0.5 }
+        )
 
-      if (observer.value) {
-        intersectionObserver.observe(observer.value)
-      }
+        if (observers.value[index]) {
+          observer.observe(observers.value[index]!)
+        }
+
+        intersectionObservers.push(observer)
+      })
     })
 
     onUnmounted(() => {
-      if (intersectionObserver) {
-        intersectionObserver.disconnect()
-      }
+      intersectionObservers.forEach(observer => {
+        observer.disconnect()
+      })
     })
 
     return {
       state,
-      observer,
+      observers,
     }
   },
 })
 </script>
 
 <style scoped>
+.main-container {
+  width: 100%;
+}
+
+.numbers-container {
+  display: flex;
+  width: 100%;
+}
+
+.number-column {
+  padding: 0 10px;
+}
+
 .infinite-container {
   height: 400px;
   overflow-y: auto;
@@ -78,6 +107,7 @@ export default defineComponent({
 .number-item {
   padding: 10px;
   border-bottom: 1px solid #eee;
+  text-align: center;
 }
 
 .observer {
