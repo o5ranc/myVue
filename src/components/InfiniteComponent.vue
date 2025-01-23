@@ -22,7 +22,7 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, ref, reactive, onMounted, onUnmounted } from 'vue'
+import { defineComponent, ref, reactive, onMounted, onUnmounted, watch } from 'vue'
 
 export default defineComponent({
   props: {
@@ -37,8 +37,11 @@ export default defineComponent({
         Array.from({ length: 10 }, (_, i) => i + 1),
         Array.from({ length: 10 }, (_, i) => i + 1),
       ],
-      pages: [1, 1, 1], // 각 컬럼별 페이지 관리
+      pages: [] as number[], // 빈 배열로 초기화
     })
+
+    // numbers 배열 길이에 맞춰 pages 초기화
+    state.pages = Array(state.numbers.length).fill(1)
 
     const loadMore = (columnIndex: number) => {
         console.log('@@@ loadMore columnIndex : ', columnIndex)
@@ -75,6 +78,14 @@ export default defineComponent({
         observer.disconnect()
       })
     })
+
+    // numbers 배열 길이 변경 감지하여 pages 업데이트
+    watch(
+      () => state.numbers.length,
+      (newLength) => {
+        state.pages = Array(newLength).fill(1)
+      }
+    )
 
     return {
       state,
