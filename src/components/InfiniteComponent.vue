@@ -5,16 +5,14 @@
         v-for="(numArray, i) in state.numbers"
         :key="'column-' + i"
         :style="{ width: `${100 / state.numbers.length}%` }">
-        <div class="infinite-container">
+        <div class="infinite-container"
+          @scroll="handleScroll($event, i)"
+          :ref="el => scrollContainers[i] = el">
           <div v-for="(item, idx) in numArray" 
             :key="'item-' + idx"
             class="number-item">
             {{ item }}
           </div>
-          <div
-          :ref="el => observers[i] = el"
-          class="observer"
-        ></div>
         </div>
       </div>
     </div>
@@ -30,56 +28,19 @@ export default defineComponent({
   },
 
   setup() {
-    const observers = ref<(HTMLElement | null)[]>([])
+    const scrollContainers = ref<(HTMLElement | null)[]>([])
     const state = reactive({
       numbers: [
         Array.from({ length: 10 }, (_, i) => i + 1),
         Array.from({ length: 10 }, (_, i) => i + 1),
         Array.from({ length: 10 }, (_, i) => i + 1),
       ],
-      pages: [] as number[], // 빈 배열로 초기화
+      pages: [] as number[],
     })
 
     // numbers 배열 길이에 맞춰 pages 초기화
     state.pages = Array(state.numbers.length).fill(1)
 
-    const loadMore = (columnIndex: number) => {
-        console.log('@@@ loadMore columnIndex : ', columnIndex)
-      const nextPage = state.pages[columnIndex] + 1
-      const startNum = state.numbers[columnIndex].length + 1
-      const newNumbers = Array.from({ length: 10 }, (_, i) => startNum + i)
-      state.numbers[columnIndex].push(...newNumbers)
-      state.pages[columnIndex] = nextPage
-    }
-
-    const intersectionObservers: IntersectionObserver[] = []
-
-    onMounted(() => {
-      state.numbers.forEach((_, index) => {
-        const observer = new IntersectionObserver(
-          (entries) => {
-            if (entries[0].isIntersecting) {
-              loadMore(index)
-            }
-          },
-          { threshold: 0.5 }
-        )
-
-        if (observers.value[index]) {
-          observer.observe(observers.value[index]!)
-        }
-
-        intersectionObservers.push(observer)
-      })
-    })
-
-    onUnmounted(() => {
-      intersectionObservers.forEach(observer => {
-        observer.disconnect()
-      })
-    })
-
-    // numbers 배열 길이 변경 감지하여 pages 업데이트
     watch(
       () => state.numbers.length,
       (newLength) => {
@@ -87,9 +48,29 @@ export default defineComponent({
       }
     )
 
+    const loadMore = (columnIndex: number) => {
+      const nextPage = state.pages[columnIndex] + 1
+      const startNum = state.numbers[columnIndex].length + 1
+      const newNumbers = Array.from({ length: 10 }, (_, i) => startNum + i)
+      state.numbers[columnIndex].push(...newNumbers)
+      state.pages[columnIndex] = nextPage
+    }
+
+    const handleScroll = (event: Event, columnIndex: number) => {
+      const container = event.target as HTMLElement
+      const scrollPosition = container.scrollTop + container.clientHeight
+      const totalHeight = container.scrollHeight
+      
+      // 스크롤이 하단에서 50px 이내일 때 새로운 데이터 로드
+      if (totalHeight - scrollPosition < 50) {
+        loadMore(columnIndex)
+      }
+    }
+
     return {
       state,
-      observers,
+      scrollContainers,
+      handleScroll,
     }
   },
 })
@@ -119,9 +100,5 @@ export default defineComponent({
   padding: 10px;
   border-bottom: 1px solid #eee;
   text-align: center;
-}
-
-.observer {
-  height: 20px;
 }
 </style>
