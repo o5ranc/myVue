@@ -71,6 +71,7 @@
               @keydown.up="handleKeyUp($event, scope.$index, 1)"
               @keydown.left="handleKeyLeft($event, scope.$index, 1)"
               @keydown.right="handleKeyRight($event, scope.$index, 1)"
+              @focus="(e) => handleFocus(e, 1)"
               :ref="el => { if (el) inputRefs[`${scope.$index}-1`] = el }"
             />
           </template>
@@ -205,13 +206,16 @@ const focusInput = (rowIndex: number, colIndex: number) => {
       // textarea
       const textarea = input.$el.querySelector('textarea')
       textarea.focus()
-      // 커서를 텍스트 끝으로 이동
       textarea.setSelectionRange(textarea.value.length, textarea.value.length)
-    } else {
-      // regular input
+    } else if (colIndex === 1) {
+      // 중간 컬럼의 input만 전체 선택
       const inputEl = input.$el.querySelector('input')
       inputEl.focus()
-      // 커서를 텍스트 끝으로 이동
+      inputEl.select()
+    } else {
+      // 마지막 컬럼의 input은 커서만 끝으로
+      const inputEl = input.$el.querySelector('input')
+      inputEl.focus()
       inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
     }
   }
@@ -291,6 +295,14 @@ const handleKeyRight = (event: KeyboardEvent, rowIndex: number, colIndex: number
       event.preventDefault()
       focusInput(rowIndex, colIndex + 1)
     }
+  }
+}
+
+// input 포커스 이벤트 핸들러 수정
+const handleFocus = (event: FocusEvent, colIndex: number) => {
+  const target = event.target as HTMLInputElement
+  if (colIndex === 1) {
+    target.select()
   }
 }
 </script>
