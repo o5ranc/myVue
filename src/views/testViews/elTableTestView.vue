@@ -54,6 +54,11 @@
               type="textarea"
               :rows="3"
               placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 0)"
+              @keydown.up="handleKeyUp($event, scope.$index, 0)"
+              @keydown.left="handleKeyLeft($event, scope.$index, 0)"
+              @keydown.right="handleKeyRight($event, scope.$index, 0)"
+              :ref="el => { if (el) inputRefs[`${scope.$index}-0`] = el }"
             />
           </template>
         </el-table-column>
@@ -62,6 +67,11 @@
             <el-input
               v-model="scope.row.singleInput"
               placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 1)"
+              @keydown.up="handleKeyUp($event, scope.$index, 1)"
+              @keydown.left="handleKeyLeft($event, scope.$index, 1)"
+              @keydown.right="handleKeyRight($event, scope.$index, 1)"
+              :ref="el => { if (el) inputRefs[`${scope.$index}-1`] = el }"
             />
           </template>
         </el-table-column>
@@ -70,6 +80,11 @@
             <el-input
               v-model="scope.row.anotherInput"
               placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 2)"
+              @keydown.up="handleKeyUp($event, scope.$index, 2)"
+              @keydown.left="handleKeyLeft($event, scope.$index, 2)"
+              @keydown.right="handleKeyRight($event, scope.$index, 2)"
+              :ref="el => { if (el) inputRefs[`${scope.$index}-2`] = el }"
             />
           </template>
         </el-table-column>
@@ -161,7 +176,7 @@ const tableData: User[] = [
 const editableTableData: EditableRow[] = [
   {
     id: 1,
-    multiInput: '',
+    multiInput: 'ㄴㅇㄻㄴㅇㅁㄴㅇㄻㄴㄹㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㄹㄴㅇㅊㅈㄷㄱㅊㄷㄴㅇㅇㄹㄴㄹㄴㅇㄹㄴㅇㄹㄴㄹㄹ',
     singleInput: '',
     anotherInput: ''
   },
@@ -178,4 +193,104 @@ const editableTableData: EditableRow[] = [
     anotherInput: ''
   }
 ]
+
+const editableTableRef = ref<TableInstance>()
+const inputRefs = ref<{ [key: string]: any }>({})
+
+const focusInput = (rowIndex: number, colIndex: number) => {
+  const key = `${rowIndex}-${colIndex}`
+  const input = inputRefs.value[key]
+  if (input) {
+    if (colIndex === 0) {
+      // textarea
+      const textarea = input.$el.querySelector('textarea')
+      textarea.focus()
+      // 커서를 텍스트 끝으로 이동
+      textarea.setSelectionRange(textarea.value.length, textarea.value.length)
+    } else {
+      // regular input
+      const inputEl = input.$el.querySelector('input')
+      inputEl.focus()
+      // 커서를 텍스트 끝으로 이동
+      inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length)
+    }
+  }
+}
+
+const handleKeyDown = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  const isTextarea = target instanceof HTMLTextAreaElement
+  
+  if (isTextarea) {
+    const textarea = target
+    const lines = textarea.value.split('\n')
+    const currentLine = textarea.value.substr(0, textarea.selectionStart).split('\n').length
+    
+    // 마지막 줄이고 커서가 텍스트 끝에 있는 경우에만 다음 행으로 이동
+    if (currentLine === lines.length && textarea.selectionStart === textarea.value.length) {
+      if (rowIndex < editableTableData.length - 1) {
+        event.preventDefault()
+        focusInput(rowIndex + 1, colIndex)
+      }
+    }
+  } else {
+    // 일반 input의 경우 커서가 텍스트 끝에 있을 때만 다음 행으로 이동
+    if (target.selectionStart === target.value.length) {
+      if (rowIndex < editableTableData.length - 1) {
+        event.preventDefault()
+        focusInput(rowIndex + 1, colIndex)
+      }
+    }
+  }
+}
+
+const handleKeyUp = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  const isTextarea = target instanceof HTMLTextAreaElement
+  
+  if (isTextarea) {
+    const textarea = target
+    const currentLine = textarea.value.substr(0, textarea.selectionStart).split('\n').length
+    
+    // 첫 번째 줄이고 커서가 텍스트 시작점에 있는 경우에만 이전 행으로 이동
+    if (currentLine === 1 && textarea.selectionStart === 0) {
+      if (rowIndex > 0) {
+        event.preventDefault()
+        focusInput(rowIndex - 1, colIndex)
+      }
+    }
+  } else {
+    // 일반 input의 경우 커서가 텍스트 시작점에 있을 때만 이전 행으로 이동
+    if (target.selectionStart === 0) {
+      if (rowIndex > 0) {
+        event.preventDefault()
+        focusInput(rowIndex - 1, colIndex)
+      }
+    }
+  }
+}
+
+const handleKeyLeft = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  
+  // 커서가 텍스트 시작점에 있을 때만 왼쪽 셀로 이동
+  if (target.selectionStart === 0) {
+    if (colIndex > 0) {
+      event.preventDefault()
+      focusInput(rowIndex, colIndex - 1)
+    }
+  }
+}
+
+const handleKeyRight = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
+  const target = event.target as HTMLInputElement | HTMLTextAreaElement
+  
+  // 커서가 텍스트 끝에 있을 때만 오른쪽 셀로 이동
+  if (target.selectionStart === target.value.length) {
+    if (colIndex < 2) {
+      event.preventDefault()
+      focusInput(rowIndex, colIndex + 1)
+    }
+  }
+}
 </script>
