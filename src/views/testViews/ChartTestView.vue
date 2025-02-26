@@ -52,12 +52,90 @@ onMounted(() => {
 
   // 업무별 기간 데이터 정의
   const taskSchedules = [
-    { name: '기획', start: '12/03', end: '12/08' },
+    {
+      name: '기획',
+      start: '12/03',
+      end: '12/08',
+      subtasks: [
+        { name: '기능 정의1', start: '12/03', end: '12/05' },
+        { name: '기능 정의2', start: '12/01', end: '12/08' }, // 실제 11/03~01/08이지만 12월 데이터만 표시
+        { name: '기능 정의3', start: '12/04', end: '12/07' },
+      ],
+    },
     { name: '설계', start: '12/06', end: '12/12' },
     { name: '개발', start: '12/10', end: '12/18' },
-    { name: '테스트', start: '12/15', end: '12/20' },
-    { name: '배포', start: '12/19', end: '12/20' },
+    {
+      name: '테스트',
+      start: '12/15',
+      end: '12/20',
+      subtasks: [
+        { name: '단위 테스트', start: '12/15', end: '12/17' },
+        { name: '통합 테스트', start: '12/16', end: '12/19' },
+        { name: '성능 테스트', start: '12/18', end: '12/20' },
+      ],
+    },
+    {
+      name: '배포',
+      start: '12/19',
+      end: '12/20',
+      subtasks: [
+        { name: '배포 준비', start: '12/19', end: '12/19' },
+        { name: '실배포', start: '12/20', end: '12/20' },
+        { name: '모니터링', start: '12/20', end: '12/20' },
+      ],
+    },
   ]
+
+  // yAxis 데이터 생성을 위한 수정된 부분
+  const yAxisData = []
+  const seriesData = []
+
+  taskSchedules.forEach((task, taskIndex) => {
+    // 메인 작업 추가
+    yAxisData.push({
+      value: task.name,
+      textStyle: {
+        fontSize: 14,
+        fontWeight: 'bold',
+        color: '#333',
+      },
+    })
+
+    seriesData.push([
+      yAxisData.length - 1,
+      parseInt(task.start.split('/')[1]),
+      parseInt(task.end.split('/')[1]),
+      0,
+      0,
+      task.name,
+      task.start,
+      task.end,
+    ])
+
+    if (task.subtasks) {
+      // subtask의 이름을 yAxis에 추가
+      task.subtasks.forEach((subtask, subtaskIndex) => {
+        yAxisData.push({
+          value: `  ${subtask.name}`, // 들여쓰기를 위해 앞에 공백 추가
+          textStyle: {
+            fontSize: 12,
+            color: '#666',
+          },
+        })
+
+        seriesData.push([
+          yAxisData.length - 1,
+          parseInt(subtask.start.split('/')[1]),
+          parseInt(subtask.end.split('/')[1]),
+          1,
+          subtaskIndex,
+          subtask.name,
+          subtask.start,
+          subtask.end,
+        ])
+      })
+    }
+  })
 
   var option = {
     title: {
@@ -67,20 +145,28 @@ onMounted(() => {
     grid: {
       left: '15%',
       right: '15%',
-      top: '15%',
-      bottom: '10%',
+      top: '10%',
+      bottom: '5%',
+      containLabel: true,
     },
     tooltip: {
       trigger: 'item',
       formatter: function (params) {
-        return `${params.name}<br/>기간: ${params.data.start} ~ ${params.data.end}`
+        const data = params.data
+        const name = data[5] // 업무 이름 (5번 인덱스)
+        const start = data[6] // 시작일 (6번 인덱스)
+        const end = data[7] // 종료일 (7번 인덱스)
+        return `${name}<br/>기간: ${start} ~ ${end}`
+      },
+      axisPointer: {
+        type: 'shadow',
       },
     },
     xAxis: {
       type: 'value',
       min: 1,
       max: 31,
-      interval: 1,
+      interval: 6,
       axisLabel: {
         formatter: (value) => `12/${String(value).padStart(2, '0')}`,
         color: function (value) {
@@ -97,11 +183,20 @@ onMounted(() => {
     },
     yAxis: {
       type: 'category',
-      data: taskSchedules.map((task) => task.name),
+      data: yAxisData,
       axisLabel: {
-        color: '#333',
-        fontSize: 14,
-        fontWeight: 'bold',
+        color: (value) => {
+          // 하위 업무는 좀 더 연한 색상으로 표시
+          return value.startsWith('  ↳ ') ? '#666' : '#333'
+        },
+        fontSize: (value) => {
+          // 하위 업무는 좀 더 작은 폰트 사이즈로 표시
+          return value.startsWith('  ↳ ') ? 12 : 14
+        },
+        fontWeight: (value) => {
+          // 메인 업무만 굵게 표시
+          return value.startsWith('  ↳ ') ? 'normal' : 'bold'
+        },
       },
       splitArea: {
         show: true,
@@ -118,49 +213,56 @@ onMounted(() => {
           const categoryIndex = api.value(0)
           const start = api.value(1)
           const end = api.value(2)
+          const isSubtask = api.value(3)
+          const subtaskIndex = api.value(4)
 
-          const height = api.size([0, 0])[1] * 0.6
-          const x0 = api.coord([start, categoryIndex])[0]
+          const baseHeight = api.size([0, 0])[1] * 0.5 // 높이를 50%로 줄여서 여백 확보
+          const subtaskHeight = baseHeight * 0.2
+
+          const x0 = api.coord([Math.max(1, start), categoryIndex])[0]
           const y0 = api.coord([start, categoryIndex])[1]
-          const x1 = api.coord([end + 1, categoryIndex])[0]
+          const x1 = api.coord([Math.min(31, end + 1), categoryIndex])[0]
+
+          let offsetY = 0
+          if (isSubtask) {
+            offsetY = (subtaskIndex + 1) * subtaskHeight
+          }
 
           const style = api.style()
           return {
             type: 'rect',
             shape: {
               x: x0,
-              y: y0 - height / 2,
+              y: y0 - baseHeight / 2 + offsetY,
               width: x1 - x0,
-              height: height,
+              height: isSubtask ? subtaskHeight : baseHeight,
             },
             style: style,
           }
         },
         encode: {
-          x: [1, 2],
+          x: [1, 2, 3],
           y: 0,
         },
-        data: taskSchedules.map((task, index) => [
-          index,
-          parseInt(task.start.split('/')[1]),
-          parseInt(task.end.split('/')[1]),
-          task.name,
-          task.start,
-          task.end,
-        ]),
+        data: seriesData,
         itemStyle: {
           color: function (params) {
             const colors = ['#c23531', '#2f4554', '#61a0a8', '#d48265', '#91c7ae']
-            return colors[params.dataIndex]
+            const baseColor = colors[Math.floor(params.dataIndex / 4)]
+            return params.data[3] ? echarts.color.lift(baseColor, 0.2) : baseColor
           },
         },
         label: {
           show: true,
           formatter: function (params) {
-            const task = taskSchedules[params.dataIndex]
-            return `${task.start} ~ ${task.end}`
+            const data = params.data
+            const name = data[5]
+            const start = data[6]
+            const end = data[7]
+            return data[3] ? name : `${start} ~ ${end}`
           },
           position: 'inside',
+          fontSize: 11,
         },
       },
     ],
