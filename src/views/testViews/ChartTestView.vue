@@ -56,50 +56,50 @@ onMounted(() => {
       subtasks: [
         {
           name: '서버 모니터링',
-          start: '3/1',
-          end: '3/10',
+          start: '2025-12-01',
+          end: '2025-12-10',
           members: [
-            { name: '김철수', start: '3/1', end: '3/10' },
-            { name: '이영희', start: '3/1', end: '3/10' },
-            { name: '박지민', start: '3/1', end: '3/10' },
+            { name: '김철수', start: '2025-12-01', end: '2025-12-10' },
+            { name: '이영희', start: '2025-12-01', end: '2025-12-10' },
+            { name: '박지민', start: '2025-12-01', end: '2025-12-10' },
           ],
         },
         {
           name: '로그 분석',
-          start: '3/12',
-          end: '3/20',
+          start: '2025-11-12',
+          end: '2025-12-20',
           members: [
-            { name: '김철수', start: '3/12', end: '3/20' },
-            { name: '최동욱', start: '3/12', end: '3/20' },
-            { name: '한소희', start: '3/12', end: '3/20' },
-            { name: '정민수', start: '3/12', end: '3/20' },
+            { name: '김철수', start: '2025-11-12', end: '2025-12-20' },
+            { name: '최동욱', start: '2025-12-12', end: '2025-12-20' },
+            { name: '한소희', start: '2025-12-12', end: '2025-12-20' },
+            { name: '정민수', start: '2025-12-12', end: '2025-12-20' },
           ],
         },
         {
           name: '보안 점검',
-          start: '3/15',
-          end: '3/25',
+          start: '2025-12-15',
+          end: '2025-12-25',
           members: [
-            { name: '이영희', start: '3/15', end: '3/25' },
-            { name: '박지민', start: '3/15', end: '3/25' },
+            { name: '이영희', start: '2025-12-15', end: '2025-12-25' },
+            { name: '박지민', start: '2025-12-15', end: '2025-12-25' },
           ],
         },
         {
           name: '네트워크 모니터링',
-          start: '3/5',
-          end: '3/15',
-          members: [{ name: '최동욱', start: '3/5', end: '3/15' }],
+          start: '2025-12-05',
+          end: '2025-12-15',
+          members: [{ name: '최동욱', start: '2025-12-05', end: '2025-12-15' }],
         },
         {
           name: '백업 관리',
-          start: '3/8',
-          end: '3/28',
+          start: '2025-10-08',
+          end: '2025-12-28',
           members: [
-            { name: '김철수', start: '3/8', end: '3/28' },
-            { name: '이영희', start: '3/8', end: '3/28' },
-            { name: '박지민', start: '3/8', end: '3/28' },
-            { name: '정민수', start: '3/8', end: '3/28' },
-            { name: '한소희', start: '3/8', end: '3/28' },
+            { name: '김철수', start: '2025-10-08', end: '2026-01-28' },
+            { name: '이영희', start: '2025-12-08', end: '2025-12-28' },
+            { name: '박지민', start: '2025-12-08', end: '2025-12-28' },
+            { name: '정민수', start: '2025-12-08', end: '2025-12-28' },
+            { name: '한소희', start: '2025-12-08', end: '2025-12-28' },
           ],
         },
       ],
@@ -108,6 +108,10 @@ onMounted(() => {
 
   const yAxisData = []
   const seriesData = []
+
+  // 12월의 시작과 끝 날짜 설정
+  const december2025Start = new Date('2025-12-01').getTime()
+  const december2025End = new Date('2025-12-31').getTime()
 
   tasks.forEach((task, taskIndex) => {
     yAxisData.push({
@@ -130,10 +134,19 @@ onMounted(() => {
         })
 
         subtask.members.forEach((member, memberIndex) => {
+          // 날짜 형식을 변환 (이미 YYYY-MM-DD 형식이므로 직접 사용)
+          let startDate = new Date(member.start).getTime()
+          let endDate = new Date(member.end).getTime()
+
+          // 시작일이 12월 1일 이전이면 12월 1일로 설정
+          startDate = Math.max(startDate, december2025Start)
+          // 종료일이 12월 31일 이후면 12월 31일로 설정
+          endDate = Math.min(endDate, december2025End)
+
           seriesData.push([
             yAxisData.length - 1,
-            parseInt(member.start.split('/')[1]),
-            parseInt(member.end.split('/')[1]),
+            startDate,
+            endDate,
             1,
             memberIndex,
             subtask.name,
@@ -172,14 +185,17 @@ onMounted(() => {
       },
     },
     xAxis: {
-      type: 'value',
-      min: 1,
-      max: 31,
-      interval: 6,
+      type: 'time',
+      min: new Date('2025-12-01').getTime(), // 2025년 12월 1일로 시작
+      max: new Date('2025-12-31').getTime(), // 2025년 12월 31일로 종료
       axisLabel: {
-        formatter: (value) => `12/${String(value).padStart(2, '0')}`,
+        formatter: (value) => {
+          const date = new Date(value)
+          return `${date.getMonth() + 1}/${date.getDate()}`
+        },
         color: function (value) {
-          return value >= 3 && value <= 20 ? '#333' : '#999'
+          const date = new Date(value)
+          return date.getDate() >= 3 && date.getDate() <= 20 ? '#333' : '#999'
         },
       },
       splitLine: {
@@ -220,30 +236,26 @@ onMounted(() => {
         type: 'custom',
         renderItem: function (params, api) {
           const categoryIndex = api.value(0)
-          const start = api.value(1)
-          const end = api.value(2)
+          const start = api.coord([api.value(1), categoryIndex])
+          const end = api.coord([api.value(2), categoryIndex])
           const isSubtask = api.value(3)
           const subtaskIndex = api.value(4)
 
-          const baseHeight = api.size([0, 0])[1] * 0.5 // 높이를 50%로 줄여서 여백 확보
+          const baseHeight = api.size([0, 0])[1] * 0.6
           const subtaskHeight = baseHeight * 0.2
-
-          const x0 = api.coord([Math.max(1, start), categoryIndex])[0]
-          const y0 = api.coord([start, categoryIndex])[1]
-          const x1 = api.coord([Math.min(31, end + 1), categoryIndex])[0]
 
           let offsetY = 0
           if (isSubtask) {
-            offsetY = (subtaskIndex + 1) * subtaskHeight
+            offsetY = (subtaskIndex - 2) * subtaskHeight
           }
 
           const style = api.style()
           return {
             type: 'rect',
             shape: {
-              x: x0,
-              y: y0 - baseHeight / 2 + offsetY,
-              width: x1 - x0,
+              x: start[0],
+              y: start[1] - baseHeight / 2 + offsetY,
+              width: end[0] - start[0],
               height: isSubtask ? subtaskHeight : baseHeight,
             },
             style: style,
@@ -289,4 +301,29 @@ onUnmounted(() => {
     myChart.resize()
   })
 })
+
+// start와 end 날짜를 체크하고 조정하는 함수 수정
+function adjustDateRange(start, end) {
+  const december1st = new Date(2025, 11, 1) // 2025년 12월 1일
+  const december31st = new Date(2025, 11, 31) // 2025년 12월 31일
+
+  const startDate = new Date(start)
+  const endDate = new Date(end)
+
+  // start가 12월 1일 이전이면 12월 1일로 설정
+  if (startDate < december1st) {
+    startDate.setTime(december1st.getTime())
+  }
+
+  // end가 12월 31일 이후이면 12월 31일로 설정
+  if (endDate > december31st) {
+    endDate.setTime(december31st.getTime())
+  }
+
+  return { start: startDate, end: endDate }
+}
+
+// 차트를 그릴 때 이 함수를 사용
+const { adjustedStart, adjustedEnd } = adjustDateRange('12/01', '12/31')
+// adjustedStart와 adjustedEnd를 사용하여 막대 그리기
 </script>
