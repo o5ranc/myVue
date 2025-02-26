@@ -50,48 +50,66 @@ const toggleLayer = () => {
 onMounted(() => {
   var myChart = echarts.init(document.getElementById('chartContainer'))
 
-  // 업무별 기간 데이터 정의
-  const taskSchedules = [
+  const tasks = [
     {
-      name: '기획',
-      start: '12/03',
-      end: '12/08',
+      name: '모니터링',
       subtasks: [
-        { name: '기능 정의1', start: '12/03', end: '12/05' },
-        { name: '기능 정의2', start: '12/01', end: '12/08' }, // 실제 11/03~01/08이지만 12월 데이터만 표시
-        { name: '기능 정의3', start: '12/04', end: '12/07' },
-      ],
-    },
-    { name: '설계', start: '12/06', end: '12/12' },
-    { name: '개발', start: '12/10', end: '12/18' },
-    {
-      name: '테스트',
-      start: '12/15',
-      end: '12/20',
-      subtasks: [
-        { name: '단위 테스트', start: '12/15', end: '12/17' },
-        { name: '통합 테스트', start: '12/16', end: '12/19' },
-        { name: '성능 테스트', start: '12/18', end: '12/20' },
-      ],
-    },
-    {
-      name: '배포',
-      start: '12/19',
-      end: '12/20',
-      subtasks: [
-        { name: '배포 준비', start: '12/19', end: '12/19' },
-        { name: '실배포', start: '12/20', end: '12/20' },
-        { name: '모니터링', start: '12/20', end: '12/20' },
+        {
+          name: '서버 모니터링',
+          start: '3/1',
+          end: '3/10',
+          members: [
+            { name: '김철수', start: '3/1', end: '3/10' },
+            { name: '이영희', start: '3/1', end: '3/10' },
+            { name: '박지민', start: '3/1', end: '3/10' },
+          ],
+        },
+        {
+          name: '로그 분석',
+          start: '3/12',
+          end: '3/20',
+          members: [
+            { name: '김철수', start: '3/12', end: '3/20' },
+            { name: '최동욱', start: '3/12', end: '3/20' },
+            { name: '한소희', start: '3/12', end: '3/20' },
+            { name: '정민수', start: '3/12', end: '3/20' },
+          ],
+        },
+        {
+          name: '보안 점검',
+          start: '3/15',
+          end: '3/25',
+          members: [
+            { name: '이영희', start: '3/15', end: '3/25' },
+            { name: '박지민', start: '3/15', end: '3/25' },
+          ],
+        },
+        {
+          name: '네트워크 모니터링',
+          start: '3/5',
+          end: '3/15',
+          members: [{ name: '최동욱', start: '3/5', end: '3/15' }],
+        },
+        {
+          name: '백업 관리',
+          start: '3/8',
+          end: '3/28',
+          members: [
+            { name: '김철수', start: '3/8', end: '3/28' },
+            { name: '이영희', start: '3/8', end: '3/28' },
+            { name: '박지민', start: '3/8', end: '3/28' },
+            { name: '정민수', start: '3/8', end: '3/28' },
+            { name: '한소희', start: '3/8', end: '3/28' },
+          ],
+        },
       ],
     },
   ]
 
-  // yAxis 데이터 생성을 위한 수정된 부분
   const yAxisData = []
   const seriesData = []
 
-  taskSchedules.forEach((task, taskIndex) => {
-    // 메인 작업 추가
+  tasks.forEach((task, taskIndex) => {
     yAxisData.push({
       value: task.name,
       textStyle: {
@@ -101,38 +119,29 @@ onMounted(() => {
       },
     })
 
-    seriesData.push([
-      yAxisData.length - 1,
-      parseInt(task.start.split('/')[1]),
-      parseInt(task.end.split('/')[1]),
-      0,
-      0,
-      task.name,
-      task.start,
-      task.end,
-    ])
-
     if (task.subtasks) {
-      // subtask의 이름을 yAxis에 추가
       task.subtasks.forEach((subtask, subtaskIndex) => {
         yAxisData.push({
-          value: `  ${subtask.name}`, // 들여쓰기를 위해 앞에 공백 추가
+          value: `  ${subtask.name} (${subtask.members.length}명)`,
           textStyle: {
             fontSize: 12,
             color: '#666',
           },
         })
 
-        seriesData.push([
-          yAxisData.length - 1,
-          parseInt(subtask.start.split('/')[1]),
-          parseInt(subtask.end.split('/')[1]),
-          1,
-          subtaskIndex,
-          subtask.name,
-          subtask.start,
-          subtask.end,
-        ])
+        subtask.members.forEach((member, memberIndex) => {
+          seriesData.push([
+            yAxisData.length - 1,
+            parseInt(member.start.split('/')[1]),
+            parseInt(member.end.split('/')[1]),
+            1,
+            memberIndex,
+            subtask.name,
+            member.start,
+            member.end,
+            member.name,
+          ])
+        })
       })
     }
   })
