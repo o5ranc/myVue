@@ -3,10 +3,11 @@
     <!-- <ProductList /> -->
     <!-- <ShoppingCart /> -->
     <!-- <TestView /> -->
-    <ElTableTestView />
+    <!-- <ElTableTestView /> -->
     <!-- <SourceView /> -->
      <!-- <CardListView/> -->
     <!-- <SourceTreeView /> -->
+    <KanbanList />
   </div>
 </template>
 
@@ -17,20 +18,22 @@ import { defineComponent } from 'vue'
 // import ProductList from './components/ProductList.vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
 // import TestView from './views/testViews/testView.vue'
-import ElTableTestView from './views/testViews/ElTableTestView.vue';
+// import ElTableTestView from './views/testViews/ElTableTestView.vue';
 // import SourceView from './views/testViews/SourceView.vue'
 // import CardListView from './views/testViews/CardListView.vue'
 // import SourceTreeView from './views/testViews/SourceTreeView.vue'
+import KanbanList from './views/testViews/kanban/KanbanList.vue';
 
 export default defineComponent({
   components: {
     // ProductList,
     // ShoppingCart
     // TestView,
-    ElTableTestView,
+    // ElTableTestView,
     // SourceView,
     // CardListView,
     // SourceTreeView,
+    KanbanList
   },
   setup() {
     // const countStore = useCounterStore()
