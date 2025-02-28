@@ -4,7 +4,7 @@
     <!-- <ShoppingCart /> -->
     <!-- <TestView /> -->
     <!-- <ElTableTestView /> -->
-    <ChartTestView />
+    <!-- <ChartTestView /> -->
     <!-- <SourceView /> -->
     <!-- <CardListView/> -->
     <!-- <SourceTreeView /> -->
@@ -20,7 +20,7 @@ import { defineComponent } from 'vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
 // import TestView from './views/testViews/testView.vue'
 // import ElTableTestView from './views/testViews/ElTableTestView.vue';
-import ChartTestView from './views/testViews/ChartTestView.vue'
+// import ChartTestView from './views/testViews/ChartTestView.vue'
 // import SourceView from './views/testViews/SourceView.vue'
 // import CardListView from './views/testViews/CardListView.vue'
 // import SourceTreeView from './views/testViews/SourceTreeView.vue'
@@ -31,8 +31,8 @@ export default defineComponent({
     // ProductList,
     // ShoppingCart
     // TestView,
-    ElTableTestView,
-    ChartTestView,
+    // ElTableTestView,
+    // ChartTestView,
     // SourceView,
     // CardListView,
     // SourceTreeView,
