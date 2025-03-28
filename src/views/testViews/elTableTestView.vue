@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div>
+    <div class="custom-table">
       <!--  체크박스가 있는 테이블  -->
       <el-table
         ref="multipleTableRef"
@@ -8,27 +8,34 @@
         style="width: 100%"
         :border="true"
         @selection-change="handleSelectionChange"
+        :header-row-style="{ height: '100px' }"
       >
-        <el-table-column
-          type="selection"
-          :selectable="selectable"
-          width="55"
-        />
-        <el-table-column
-          label="Date"
-          width="120"
-        >
-          <template #default="scope">{{ scope.row.date }}</template>
+        <el-table-column type="selection" width="55" />
+        <el-table-column>
+          <template #header>
+            <div class="custom-header" style="width: 100%">
+              <div class="column-labels">
+                <div class="label-row">
+                  <span style="width: 120px">Date</span>
+                  <span style="width: 120px">Name</span>
+                  <span>Address</span>
+                </div>
+              </div>
+              <div class="header-bottom">통합 헤더</div>
+            </div>
+          </template>
+          <el-table-column
+            prop="date"
+            width="120"
+          />
+          <el-table-column
+            prop="name"
+            width="120"
+          />
+          <el-table-column
+            prop="address"
+          />
         </el-table-column>
-        <el-table-column
-          property="name"
-          label="Name"
-          width="120"
-        />
-        <el-table-column
-          property="address"
-          label="Address"
-        />
       </el-table>
       <div style="margin-top: 20px">
         <el-button @click="toggleSelection([tableData[1], tableData[2]])">
@@ -306,3 +313,47 @@ const handleFocus = (event: FocusEvent, colIndex: number) => {
   }
 }
 </script>
+
+<style scoped>
+.custom-header {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+}
+
+.column-labels {
+  padding: 8px 0;
+}
+
+.label-row {
+  display: flex;
+  width: 100%;
+}
+
+.label-row span {
+  text-align: center;
+}
+
+.header-extra {
+  padding: 4px 0;
+  font-size: 12px;
+  color: #606266;
+  border-top: 1px solid #ebeef5;
+}
+
+.header-bottom {
+  padding: 4px 0;
+  border-top: 1px solid #ebeef5;
+}
+
+/* 
+  :deep() 는 Vue의 scoped CSS에서 사용되는 특수한 선택자입니다.
+  scoped CSS에서는 기본적으로 현재 컴포넌트의 요소에만 스타일이 적용되지만,
+  :deep()을 사용하면 컴포넌트의 자식 요소에도 스타일을 적용할 수 있습니다.
+  
+  여기서는 el-table 컴포넌트의 내부 요소인 header wrapper의 마지막 tr을 숨기기 위해 사용됩니다.
+*/
+.custom-table :deep(.el-table__header-wrapper .el-table__header tr:last-child) {
+  display: none;
+}
+</style>

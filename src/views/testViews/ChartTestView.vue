@@ -97,14 +97,14 @@ const tasks = [
       },
       {
         wrCode: 'WRT1042-DP7',
-        wrEndDate: '2025-12-25',
+        wrEndDate: '2024-11-20',
         wrMasterId: 23438,
         wrMonthlyId: 44,
         wrName: '업무요청서111',
         wrStartDate: '2024-11-13',
         wrTaskId: '1111',
         wrUserId: '401331',
-        wrUserName: '비빔밥',
+        wrUserName: '비빔밥ㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅁㄴㄻㄴㄻㄴㄻㄴㅇㄻㄴㅇㄹ',
         wrWorkLoad: 1.2,
       },
       {
@@ -199,7 +199,11 @@ const getMonthRange = (year: number, month: string) => {
   // 해당 월의 시작일 (1일)
   const selectStartDate = new Date(year, parseInt(month) - 1, 1).getTime()
 
-  // 해당 월의 마지막 날
+  // 해당 월의 마지막 날 계산
+  // year: 선택된 연도 (예: 2024)
+  // month: 선택된 월 (예: "12")
+  // new Date()의 month 파라미터에 현재 월을 넣고 day를 0으로 지정하면 이전 달의 마지막 날짜가 반환됨
+  // 시간은 23:59:59로 설정하여 해당 월의 마지막 순간을 나타냄
   const selectEndDate = new Date(year, parseInt(month), 0, 23, 59, 59).getTime()
 
   return {
@@ -356,11 +360,14 @@ const createChartOption = (yAxisData: string[], seriesData: any[], monthStart: n
       axisTick: {
         // 축 눈금 설정
         show: true,
+        length:400,
+        lineStyle: {type: 'solid', color: '#e0e0e0'},
       },
+      tickSize: '20',
       splitLine: {
         // 구분선 설정
         show: true,
-        lineStyle: { type: 'dashed', color: '#e0e0e0' },
+        lineStyle: { type: 'solid', color: '#e0e0e0' },
       },
       splitArea: {
         // 구분 영역 설정

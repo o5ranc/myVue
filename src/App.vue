@@ -8,7 +8,8 @@
     <!-- <SourceView /> -->
     <!-- <CardListView/> -->
     <!-- <SourceTreeView /> -->
-    <KanbanList />
+    <!-- <KanbanList /> -->
+     <PostitView />
   </div>
 </template>
 
@@ -19,12 +20,13 @@ import { defineComponent } from 'vue'
 // import ProductList from './components/ProductList.vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
 // import TestView from './views/testViews/testView.vue'
-// import ElTableTestView from './views/testViews/ElTableTestView.vue';
+// import ElTableTestView from "./views/testViews/ElTableTestView.vue"
 // import ChartTestView from './views/testViews/ChartTestView.vue'
 // import SourceView from './views/testViews/SourceView.vue'
 // import CardListView from './views/testViews/CardListView.vue'
 // import SourceTreeView from './views/testViews/SourceTreeView.vue'
-import KanbanList from './views/testViews/kanban/KanbanList.vue';
+// import KanbanList from './views/testViews/kanban/KanbanList.vue';
+import PostitView from './views/alert/PostitView.vue';
 
 export default defineComponent({
   components: {
@@ -36,7 +38,8 @@ export default defineComponent({
     // SourceView,
     // CardListView,
     // SourceTreeView,
-    KanbanList
+    // KanbanList,
+    PostitView
   },
   setup() {
     // const countStore = useCounterStore()
