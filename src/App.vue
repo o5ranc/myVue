@@ -9,7 +9,8 @@
     <!-- <CardListView/> -->
     <!-- <SourceTreeView /> -->
     <!-- <KanbanList /> -->
-     <PostitView />
+     <!-- <PostitView /> -->
+     <BranchLintList />
   </div>
 </template>
 
@@ -26,7 +27,8 @@ import { defineComponent } from 'vue'
 // import CardListView from './views/testViews/CardListView.vue'
 // import SourceTreeView from './views/testViews/SourceTreeView.vue'
 // import KanbanList from './views/testViews/kanban/KanbanList.vue';
-import PostitView from './views/alert/PostitView.vue';
+// import PostitView from './views/alert/PostitView.vue';
+import BranchLintList from './views/testViews/BranchLintList.vue';
 
 export default defineComponent({
   components: {
@@ -39,7 +41,8 @@ export default defineComponent({
     // CardListView,
     // SourceTreeView,
     // KanbanList,
-    PostitView
+    // PostitView
+    BranchLintList
   },
   setup() {
     // const countStore = useCounterStore()
