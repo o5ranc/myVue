@@ -11,9 +11,9 @@
 
     <el-table :data="getAllLintItems" style="width: 700px" @expand-change="handleExpandClick">
       <el-table-column type="expand">
-        <template #default="props">
-          <div v-if="props.row.progress === 100 && props.row.result === 'fail'">
-            <el-table :data="props.row.commitDetails" style="width: 100%; margin-top: 0; border-top: none;">
+        <template #expand="{ row }">
+          <div v-if="row.progress === 100 && row.result === 'fail' && row.showDetails">
+            <el-table :data="row.commitDetails" style="width: 100%; margin-top: 0; border-top: none;">
               <el-table-column prop="message" label="Commits Message" />
               <el-table-column prop="user" label="Commit User" width="150" />
               <el-table-column prop="time" label="Commits 시간" width="180" />
@@ -39,7 +39,14 @@
         <template #default="{ row }">
           <div v-if="row.progress === 100 && row.result === 'fail'">
             <el-button size="small" type="primary" @click="recheckItem(row)">재조회</el-button>
-            <el-button size="small" type="info" @click="toggleDetails(row)">더보기</el-button>
+            <el-button 
+              size="small" 
+              type="info" 
+              @click="toggleDetails(row)"
+              :icon="row.showDetails ? 'el-icon-arrow-up' : 'el-icon-arrow-down'"
+            >
+              {{ row.showDetails ? '접기' : '더보기' }}
+            </el-button>
           </div>
         </template>
       </el-table-column>
@@ -59,6 +66,7 @@ interface LintItem {
   progress?: number;
   showDetails?: boolean;
   commitDetails?: CommitDetail[];
+  stage?: string;
 }
 
 interface CommitDetail {
@@ -158,7 +166,8 @@ export default defineComponent({
           ...lintItem,
           stage: item.stage,
           showDetails: false,
-          commitDetails: []
+          commitDetails: [],
+          status: lintItem.progress === 100 && lintItem.result === 'fail' ? 'fail' : ''
         }))
       )
     })
@@ -348,31 +357,60 @@ export default defineComponent({
           })
         }
         
-        item.commitDetails = randomCommits
+        // Vue의 반응형 시스템을 활용하여 데이터 업데이트
+        item.commitDetails = [...randomCommits];
       }
       
       // showDetails 속성을 토글
-      item.showDetails = !item.showDetails
+      item.showDetails = !item.showDetails;
       
-      // 테이블의 expand 상태를 변경하기 위해 강제로 리렌더링
+      // Vue의 nextTick을 사용하여 DOM 업데이트 후 처리
       nextTick(() => {
-        const table = document.querySelector('.el-table')
+        console.log('DOM 업데이트 후 처리 시작');
+        const table = document.querySelector('.el-table');
+        
         if (table) {
-          const rows = table.querySelectorAll('.el-table__row')
+          const rows = table.querySelectorAll('.el-table__row');
+          
           rows.forEach((row, index) => {
-            if (getAllLintItems.value[index] === item) {
-              const expandBtn = row.querySelector('.el-table__expand-icon')
-              if (expandBtn) {
+            const currentItem = getAllLintItems.value[index];
+            
+            // 객체의 고유 속성을 비교
+            if (currentItem.functionName === item.functionName && 
+                currentItem.content === item.content && 
+                currentItem.stage === item.stage) {
+              console.log('일치하는 행 찾음:', row);
+              
+              // expand 버튼 클릭 이벤트를 시뮬레이션
+              const expandIcon = row.querySelector('.el-table__expand-icon');
+              if (expandIcon) {
+                // expand 상태 토글
                 if (item.showDetails) {
-                  expandBtn.classList.add('el-table__expand-icon--expanded')
+                  // 펼치기
+                  (expandIcon as HTMLElement).classList.add('el-table__expand-icon--expanded');
+                  (row as HTMLElement).classList.add('expanded');
+                  
+                  // expand 행 표시
+                  const expandRow = row.nextElementSibling;
+                  if (expandRow && expandRow.classList.contains('el-table__expanded-cell')) {
+                    (expandRow as HTMLElement).style.display = 'table-row';
+                  }
                 } else {
-                  expandBtn.classList.remove('el-table__expand-icon--expanded')
+                  // 접기
+                  (expandIcon as HTMLElement).classList.remove('el-table__expand-icon--expanded');
+                  (row as HTMLElement).classList.remove('expanded');
+                  
+                  // expand 행 숨기기
+                  const expandRow = row.nextElementSibling;
+                  if (expandRow && expandRow.classList.contains('el-table__expanded-cell')) {
+                    (expandRow as HTMLElement).style.display = 'none';
+                  }
                 }
               }
             }
-          })
+          });
         }
-      })
+      });
       
       console.log('더보기 클릭 후:', item.showDetails, item.commitDetails);
     }
@@ -400,4 +438,5 @@ export default defineComponent({
 .el-table {
   margin-bottom: 0;
 }
+
 </style>
