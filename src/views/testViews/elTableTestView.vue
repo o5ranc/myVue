@@ -1,5 +1,10 @@
 <template>
   <div>
+    {{ expandedRows }}
+    <el-button @click="() => {
+      console.log(tableData[0].commitDetails[0].user)
+      tableData[0].commitDetails[0].user = 'ran'
+    }">test update</el-button>
     <div class="custom-table">
       <!--  체크박스가 있는 테이블  -->
       <el-table
@@ -9,8 +14,19 @@
         :border="true"
         @selection-change="handleSelectionChange"
         :header-row-style="{ height: '100px' }"
+        row-key="id"
+        :expand-row-keys="expandedRows"
       >
         <el-table-column type="selection" width="55" />
+        <el-table-column label="Stage" width="100" type="expand">
+          <template #default="props">
+            <el-table :data="props.row.commitDetails" style="width: 100%">
+              <el-table-column prop="message" label="Message" width="100" />
+              <el-table-column prop="user" label="User" width="100" />
+              <el-table-column prop="time" label="Time" width="100" />
+            </el-table>
+          </template>
+        </el-table-column>
         <el-table-column>
           <template #header>
             <div class="custom-header" style="width: 100%">
@@ -102,14 +118,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, reactive } from 'vue'
 import type { TableInstance } from 'element-plus'
+
+interface CommitDetail {
+  message: string
+  user: string
+  time: string
+  sha: string
+}
 
 interface User {
   id: number
   date: string
   name: string
-  address: string
+  address: string 
+  commitDetails: CommitDetail[]
 }
 
 interface EditableRow {
@@ -136,50 +160,64 @@ const handleSelectionChange = (val: User[]) => {
   multipleSelection.value = val
 }
 
-const tableData: User[] = [
+const tableData = reactive<User[]>([
   {
     id: 1,
     date: '2016-05-03',
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    commitDetails: [
+      { 
+        message: 'Commit 1',
+        user: 'John',
+        time: '2021-01-01',
+        sha: '1234567890'
+      }
+    ]
   },
   {
     id: 2,
     date: '2016-05-02',
-    name: 'Tom',
+    name: ' Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    commitDetails: []
   },
   {
     id: 3,
     date: '2016-05-04',
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    commitDetails: []
   },
   {
     id: 4,
     date: '2016-05-01',
     name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    address: 'No. 189, Grove St, Los Angeles',  
+    commitDetails: []
   },
   {
     id: 5,
     date: '2016-05-08',
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    commitDetails: []
   },
   {
     id: 6,
     date: '2016-05-06',
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
+    commitDetails: []
   },
   {
     id: 7,
     date: '2016-05-07',
     name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',
+    address: 'No. 189, Grove St, Los Angeles',  
+    commitDetails: []
   },
-]
+])
 
 const editableTableData: EditableRow[] = [
   {
@@ -310,6 +348,22 @@ const handleFocus = (event: FocusEvent, colIndex: number) => {
   const target = event.target as HTMLInputElement
   if (colIndex === 1) {
     target.select()
+  }
+}
+
+const expandedRows = ref<number[]>([])
+
+const handleExpandChange = (row: User, expanded: boolean) => {
+  console.log('>>>>', row, expanded)
+  if (expanded) {
+    expandedRows.value.push(row.id)
+  } else {
+    const index = expandedRows.value.indexOf(row.id)
+    console.log(index)
+    if (index > -1) {
+    console.log(expandedRows.value)
+      expandedRows.value.splice(index, 1)
+    }
   }
 }
 </script>

@@ -3,14 +3,14 @@
     <!-- <ProductList /> -->
     <!-- <ShoppingCart /> -->
     <!-- <TestView /> -->
-    <!-- <ElTableTestView /> -->
+    <ElTableTestView />
     <!-- <ChartTestView /> -->
     <!-- <SourceView /> -->
     <!-- <CardListView/> -->
     <!-- <SourceTreeView /> -->
     <!-- <KanbanList /> -->
      <!-- <PostitView /> -->
-     <BranchLintList />
+     <!-- <BranchLintList /> -->
   </div>
 </template>
 
@@ -20,29 +20,29 @@ import { defineComponent } from 'vue'
 // import { useCounterStore } from '@/stores/counter'
 // import ProductList from './components/ProductList.vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
-// import TestView from './views/testViews/testView.vue'
-// import ElTableTestView from "./views/testViews/ElTableTestView.vue"
+// import TestView from './views/testViews/testeView.vue'
+import ElTableTestView from "./views/testViews/ElTableTestView.vue"
 // import ChartTestView from './views/testViews/ChartTestView.vue'
 // import SourceView from './views/testViews/SourceView.vue'
 // import CardListView from './views/testViews/CardListView.vue'
 // import SourceTreeView from './views/testViews/SourceTreeView.vue'
 // import KanbanList from './views/testViews/kanban/KanbanList.vue';
 // import PostitView from './views/alert/PostitView.vue';
-import BranchLintList from './views/testViews/BranchLintList.vue';
+// import BranchLintList from './views/testViews/BranchLintList.vue';
 
 export default defineComponent({
   components: {
     // ProductList,
     // ShoppingCart
     // TestView,
-    // ElTableTestView,
+    ElTableTestView,
     // ChartTestView,
     // SourceView,
     // CardListView,
     // SourceTreeView,
     // KanbanList,
     // PostitView
-    BranchLintList
+    // BranchLintList
   },
   setup() {
     // const countStore = useCounterStore()
