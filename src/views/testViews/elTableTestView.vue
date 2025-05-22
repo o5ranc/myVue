@@ -39,6 +39,12 @@
         </el-button>
         <el-button @click="toggleSelection()">Clear selection</el-button>
       </div> -->
+      {{ columns }}
+      <br />
+      {{ checkedColumns }}
+      <br />
+      {{ visibleColumns }}
+      <br />
       <el-button @click="showColumnSelector = !showColumnSelector">컬럼 선택</el-button>
 
       <!-- 컬럼 선택 영역 -->
@@ -337,18 +343,18 @@ const inputRefs = ref<{ [key: string]: any }>({})
 const columns = ref([
   {
     prop: 'date',
-    label: 'Multi Input',
+    label: '날짜',
     align: 'left',
   },
   {
     prop: 'name',
-    label: 'Single Input',
+    label: '이름',
     width: 200,
     align: 'left',
   },
   {
     prop: 'address',
-    label: 'Multi Input',
+    label: '주소',
     width: 200,
     align: 'left',
   },
