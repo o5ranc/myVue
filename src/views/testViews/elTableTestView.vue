@@ -7,7 +7,7 @@
     }">test update</el-button>
     <div class="custom-table">
       <!--  체크박스가 있는 테이블  -->
-      <el-table
+      <!-- <el-table
         ref="multipleTableRef"
         :data="tableData"
         style="width: 100%"
@@ -54,6 +54,17 @@
         </el-table-column>
       </el-table>
       <div style="margin-top: 20px">
+        <el-table-column
+          property="name"
+          label="Name"
+          width="120"
+        />
+        <el-table-column
+          property="address"
+          label="Address"
+        />
+      </el-table> -->
+      <!-- <div style="margin-top: 20px">
         <el-button @click="toggleSelection([tableData[1], tableData[2]])">
           Toggle selection status of second and third rows
         </el-button>
@@ -61,16 +72,52 @@
           Toggle selection status based on selectable
         </el-button>
         <el-button @click="toggleSelection()">Clear selection</el-button>
+      </div> -->
+      {{ columns }}
+      <br />
+      {{ checkedColumns }}
+      <br />
+      {{ visibleColumns }}
+      <br />
+      <el-button @click="showColumnSelector = !showColumnSelector">컬럼 선택</el-button>
+
+      <!-- 컬럼 선택 영역 -->
+      <div
+        v-show="showColumnSelector"
+        class="column-selector"
+      >
+        <el-checkbox
+          v-model="checkAll"
+          :indeterminate="isIndeterminate"
+          @change="handleCheckAllChange"
+        >
+          전체 선택
+        </el-checkbox>
+        <el-checkbox-group
+          v-model="checkedColumns"
+          @change="handleCheckedColumnsChange"
+        >
+          <el-checkbox
+            v-for="column in columns"
+            :key="column.prop"
+            :label="column.prop"
+          >
+            {{ column.label }}
+          </el-checkbox>
+        </el-checkbox-group>
       </div>
     </div>
     <div>
       <el-table
-        ref="editableTableRef"
+        ref="editableTableNewRef"
         :data="editableTableData"
         style="width: 100%"
         :border="true"
       >
-        <el-table-column label="Multi Input" width="200">
+        <el-table-column
+          v-if="columns.find((column) => column.prop === 'date')"
+          label="Multi Input"
+        >
           <template #default="scope">
             <el-input
               v-model="scope.row.multiInput"
@@ -81,11 +128,19 @@
               @keydown.up="handleKeyUp($event, scope.$index, 0)"
               @keydown.left="handleKeyLeft($event, scope.$index, 0)"
               @keydown.right="handleKeyRight($event, scope.$index, 0)"
-              :ref="el => { if (el) inputRefs[`${scope.$index}-0`] = el }"
+              :ref="
+                (el) => {
+                  if (el) inputRefs[`${scope.$index}-0`] = el
+                }
+              "
             />
           </template>
         </el-table-column>
-        <el-table-column label="Single Input" width="200">
+        <el-table-column
+          v-if="columns.find((column) => column.prop === 'name')"
+          label="Single Input"
+          width="200"
+        >
           <template #default="scope">
             <el-input
               v-model="scope.row.singleInput"
@@ -95,11 +150,19 @@
               @keydown.left="handleKeyLeft($event, scope.$index, 1)"
               @keydown.right="handleKeyRight($event, scope.$index, 1)"
               @focus="(e) => handleFocus(e, 1)"
-              :ref="el => { if (el) inputRefs[`${scope.$index}-1`] = el }"
+              :ref="
+                (el) => {
+                  if (el) inputRefs[`${scope.$index}-1`] = el
+                }
+              "
             />
           </template>
         </el-table-column>
-        <el-table-column label="Another Single Input" width="200">
+        <el-table-column
+          v-if="columns.find((column) => column.prop === 'address')"
+          label="Address"
+          width="200"
+        >
           <template #default="scope">
             <el-input
               v-model="scope.row.anotherInput"
@@ -108,18 +171,105 @@
               @keydown.up="handleKeyUp($event, scope.$index, 2)"
               @keydown.left="handleKeyLeft($event, scope.$index, 2)"
               @keydown.right="handleKeyRight($event, scope.$index, 2)"
-              :ref="el => { if (el) inputRefs[`${scope.$index}-2`] = el }"
+              :ref="
+                (el) => {
+                  if (el) inputRefs[`${scope.$index}-2`] = el
+                }
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          v-for="column in visibleColumns"
+          :key="column.label"
+          :prop="column.prop"
+          :label="column.label"
+          :min-width="column.minWidth"
+          :width="column.width"
+          :align="column.align"
+        ></el-table-column>
+      </el-table>
+    </div>
+    <!-- <div>
+      <el-table
+        ref="editableTableRef"
+        :data="editableTableData"
+        style="width: 100%"
+        :border="true"
+      >
+        <el-table-column
+          label="Multi Input"
+          width="200"
+        >
+          <template #default="scope">
+            <el-input
+              v-model="scope.row.multiInput"
+              type="textarea"
+              :rows="3"
+              placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 0)"
+              @keydown.up="handleKeyUp($event, scope.$index, 0)"
+              @keydown.left="handleKeyLeft($event, scope.$index, 0)"
+              @keydown.right="handleKeyRight($event, scope.$index, 0)"
+              :ref="
+                (el) => {
+                  if (el) inputRefs[`${scope.$index}-0`] = el
+                }
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="Single Input"
+          width="200"
+        >
+          <template #default="scope">
+            <el-input
+              v-model="scope.row.singleInput"
+              placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 1)"
+              @keydown.up="handleKeyUp($event, scope.$index, 1)"
+              @keydown.left="handleKeyLeft($event, scope.$index, 1)"
+              @keydown.right="handleKeyRight($event, scope.$index, 1)"
+              @focus="(e) => handleFocus(e, 1)"
+              :ref="
+                (el) => {
+                  if (el) inputRefs[`${scope.$index}-1`] = el
+                }
+              "
+            />
+          </template>
+        </el-table-column>
+        <el-table-column
+          label="Another Single Input"
+          width="200"
+        >
+          <template #default="scope">
+            <el-input
+              v-model="scope.row.anotherInput"
+              placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 2)"
+              @keydown.up="handleKeyUp($event, scope.$index, 2)"
+              @keydown.left="handleKeyLeft($event, scope.$index, 2)"
+              @keydown.right="handleKeyRight($event, scope.$index, 2)"
+              :ref="
+                (el) => {
+                  if (el) inputRefs[`${scope.$index}-2`] = el
+                }
+              "
             />
           </template>
         </el-table-column>
       </el-table>
-    </div>
+    </div> -->
   </div>
 </template>
 
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import type { TableInstance } from 'element-plus'
+import type { CheckboxValueType } from 'element-plus'
+import { renderBlock } from 'element-plus/es/utils'
 
 interface CommitDetail {
   message: string
@@ -145,8 +295,12 @@ interface EditableRow {
 
 const multipleTableRef = ref<TableInstance>()
 const multipleSelection = ref<User[]>([])
+// const checkedColumns = ref(['phone1'])
 
+const checkAll = ref(false)
+const isIndeterminate = ref(true)
 const selectable = (row: User) => ![1, 2].includes(row.id)
+
 const toggleSelection = (rows?: User[], ignoreSelectable?: boolean) => {
   if (rows) {
     rows.forEach((row) => {
@@ -224,24 +378,43 @@ const editableTableData: EditableRow[] = [
     id: 1,
     multiInput: 'ㄴㅇㄻㄴㅇㅁㄴㅇㄻㄴㄹㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㅇㄹㄴㄹㄴㅇㅊㅈㄷㄱㅊㄷㄴㅇㅇㄹㄴㄹㄴㅇㄹㄴㅇㄹㄴㄹㄹ',
     singleInput: '',
-    anotherInput: ''
+    anotherInput: '',
   },
   {
     id: 2,
     multiInput: '',
     singleInput: '',
-    anotherInput: ''
+    anotherInput: '',
   },
   {
     id: 3,
     multiInput: '',
     singleInput: '',
-    anotherInput: ''
-  }
+    anotherInput: '',
+  },
 ]
 
 const editableTableRef = ref<TableInstance>()
 const inputRefs = ref<{ [key: string]: any }>({})
+const columns = ref([
+  {
+    prop: 'date',
+    label: '날짜',
+    align: 'left',
+  },
+  {
+    prop: 'name',
+    label: '이름',
+    width: 200,
+    align: 'left',
+  },
+  {
+    prop: 'address',
+    label: '주소',
+    width: 200,
+    align: 'left',
+  },
+])
 
 const focusInput = (rowIndex: number, colIndex: number) => {
   const key = `${rowIndex}-${colIndex}`
@@ -269,12 +442,12 @@ const focusInput = (rowIndex: number, colIndex: number) => {
 const handleKeyDown = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
   const target = event.target as HTMLInputElement | HTMLTextAreaElement
   const isTextarea = target instanceof HTMLTextAreaElement
-  
+
   if (isTextarea) {
     const textarea = target
     const lines = textarea.value.split('\n')
     const currentLine = textarea.value.substr(0, textarea.selectionStart).split('\n').length
-    
+
     // 마지막 줄이고 커서가 텍스트 끝에 있는 경우에만 다음 행으로 이동
     if (currentLine === lines.length && textarea.selectionStart === textarea.value.length) {
       if (rowIndex < editableTableData.length - 1) {
@@ -296,11 +469,11 @@ const handleKeyDown = (event: KeyboardEvent, rowIndex: number, colIndex: number)
 const handleKeyUp = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
   const target = event.target as HTMLInputElement | HTMLTextAreaElement
   const isTextarea = target instanceof HTMLTextAreaElement
-  
+
   if (isTextarea) {
     const textarea = target
     const currentLine = textarea.value.substr(0, textarea.selectionStart).split('\n').length
-    
+
     // 첫 번째 줄이고 커서가 텍스트 시작점에 있는 경우에만 이전 행으로 이동
     if (currentLine === 1 && textarea.selectionStart === 0) {
       if (rowIndex > 0) {
@@ -321,7 +494,7 @@ const handleKeyUp = (event: KeyboardEvent, rowIndex: number, colIndex: number) =
 
 const handleKeyLeft = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
   const target = event.target as HTMLInputElement | HTMLTextAreaElement
-  
+
   // 커서가 텍스트 시작점에 있을 때만 왼쪽 셀로 이동
   if (target.selectionStart === 0) {
     if (colIndex > 0) {
@@ -333,7 +506,7 @@ const handleKeyLeft = (event: KeyboardEvent, rowIndex: number, colIndex: number)
 
 const handleKeyRight = (event: KeyboardEvent, rowIndex: number, colIndex: number) => {
   const target = event.target as HTMLInputElement | HTMLTextAreaElement
-  
+
   // 커서가 텍스트 끝에 있을 때만 오른쪽 셀로 이동
   if (target.selectionStart === target.value.length) {
     if (colIndex < 2) {
@@ -351,6 +524,7 @@ const handleFocus = (event: FocusEvent, colIndex: number) => {
   }
 }
 
+<<<<<<< HEAD
 const expandedRows = ref<number[]>([])
 
 const handleExpandChange = (row: User, expanded: boolean) => {
@@ -366,6 +540,30 @@ const handleExpandChange = (row: User, expanded: boolean) => {
     }
   }
 }
+
+// 컬럼 선택 관련 상태 추가
+const showColumnSelector = ref(false)
+const checkedColumns = ref(columns.value.map((col) => col.prop))
+
+// 체크박스 관련 메서드 수정
+const handleCheckAllChange = (val: boolean) => {
+  checkedColumns.value = val ? columns.value.map((col) => col.prop) : []
+  isIndeterminate.value = false
+  console.log('handleCheckAllChange checkedColumns : ', checkedColumns.value)
+}
+
+const handleCheckedColumnsChange = (value: string[]) => {
+  const checkedCount = value.length
+  checkAll.value = checkedCount === columns.value.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < columns.value.length
+}
+
+// computed 속성 추가
+const visibleColumns = computed(() => {
+  return columns.value.filter((col) => checkedColumns.value.includes(col.prop))
+})
+
+const handleClick = () => {}
 </script>
 
 <style scoped>
@@ -409,5 +607,14 @@ const handleExpandChange = (row: User, expanded: boolean) => {
 */
 .custom-table :deep(.el-table__header-wrapper .el-table__header tr:last-child) {
   display: none;
+}
+
+.column-selector {
+  margin-top: 10px;
+  padding: 15px;
+  border: 1px solid #dcdfe6;
+  border-radius: 4px;
+  background-color: #fff;
+>>>>>>> a2982a2b1f64d8e9a103ae87771680230b7b9f6b
 }
 </style>

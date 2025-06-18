@@ -76,6 +76,7 @@ let myChart: echarts.ECharts
 //================================================================================= 설정 및 정의 값
 const selectedYear = ref(2024)
 const selectedMonth = ref('11')
+let categoryHeights = []
 
 // 차트 데이터
 const tasks = [
@@ -160,6 +161,83 @@ const tasks = [
         wrStartDate: '2024-11-13',
         wrUserId: '401331',
         wrUserName: '홍홍홍',
+      },
+      {
+        wrCode: 'WRT1042-DP7',
+        wrEndDate: '2024-11-29',
+        wrMasterId: 23438,
+        wrMonthlyId: 44,
+        wrName: '업무요청서111',
+        wrStartDate: '2024-11-05',
+        wrTaskId: '1111',
+        wrUserId: '401331',
+        wrUserName: '강자',
+      },
+      {
+        wrCode: 'WRT1042-DP7',
+        wrEndDate: '2024-11-29',
+        wrMasterId: 23438,
+        wrMonthlyId: 44,
+        wrName: '업무요청서111',
+        wrStartDate: '2024-11-05',
+        wrTaskId: '1111',
+        wrUserId: '401331',
+        wrUserName: '강자',
+      },
+      {
+        wrCode: 'WRT1042-DP7',
+        wrEndDate: '2024-11-29',
+        wrMasterId: 23438,
+        wrMonthlyId: 44,
+        wrName: '업무요청서111',
+        wrStartDate: '2024-11-05',
+        wrTaskId: '1111',
+        wrUserId: '401331',
+        wrUserName: '강자',
+      },
+      {
+        wrCode: 'WRT1042-DP7',
+        wrEndDate: '2024-11-29',
+        wrMasterId: 23438,
+        wrMonthlyId: 44,
+        wrName: '업무요청서111',
+        wrStartDate: '2024-11-05',
+        wrTaskId: '1111',
+        wrUserId: '401331',
+        wrUserName: '강자',
+      },
+      {
+        wrCode: 'WRT1042-DP7',
+        wrEndDate: '2024-11-29',
+        wrMasterId: 23438,
+        wrMonthlyId: 44,
+        wrName: '업무요청서111',
+        wrStartDate: '2024-11-05',
+        wrTaskId: '1111',
+        wrUserId: '401331',
+        wrUserName: '강자',
+      },
+      {
+        wrCode: 'WRT1042-DP7',
+        wrEndDate: '2024-11-29',
+        wrMasterId: 23438,
+        wrMonthlyId: 44,
+        wrName: '업무요청서111',
+        wrStartDate: '2024-11-05',
+        wrTaskId: '1111',
+        wrUserId: '401331',
+        wrUserName: '강자',
+      },
+      {
+        wrCode: 'WRT1042-DP7',
+        wrEndDate: '2024-11-29',
+        wrMasterId: 23438,
+        wrMonthlyId: 44,
+        wrName: '업무요청서111',
+        wrStartDate: '2024-11-05',
+        wrTaskId: '1111',
+        wrUserId: '401331',
+        wrUserName: '강자',
       },
     ],
   },
@@ -392,7 +470,7 @@ const createChartOption = (yAxisData: string[], seriesData: any[], monthStart: n
           const userName = api.value(6) // 사용자 이름
 
           const height = api.size([0, 1])[1] // 전체 높이
-          const barHeight = Math.min((height * 0.6) / totalUsers, 20) // 막대 높이
+          const barHeight = 20 // 막대 높이
           const offsetY = -(barHeight * totalUsers) / 2 + userIndex * barHeight // Y축 오프셋
 
           const validStart = Math.max(start[0], api.coord([monthStart, 0])[0]) // 유효 시작점
@@ -400,29 +478,38 @@ const createChartOption = (yAxisData: string[], seriesData: any[], monthStart: n
           const barWidth = Math.max(validEnd - validStart, 2) // 막대 너비
 
           return {
-            type: 'group', // 그룹 타입
+            type: 'group',
             children: [
               {
-                type: 'rect', // 사각형 도형
+                type: 'rect',
                 shape: {
-                  // 도형 모양 설정
                   x: validStart,
                   y: start[1] + offsetY,
                   width: barWidth,
                   height: barHeight * 0.8,
                 },
                 style: {
-                  // 도형 스타일 설정
                   fill: color,
                   shadowBlur: 2,
                   shadowColor: 'rgba(0,0,0,0.1)',
                   borderRadius: 2,
                 },
+                onclick: function () {
+                  const taskName = yAxisData[categoryIndex]
+                  const timeRange = [validStart, validEnd]
+                  console.log('클릭한 막대 정보:', {
+                    업무: taskName,
+                    담당자: userName,
+                    시작: timeRange[0],
+                    종료: timeRange[1],
+                    카테고리인덱스: categoryIndex,
+                    시리즈인덱스: params.seriesIndex,
+                  })
+                },
               },
               {
-                type: 'text', // 텍스트 요소
+                type: 'text',
                 style: {
-                  // 텍스트 스타일 설정
                   text: userName,
                   fontSize: 12,
                   fill: '#333',
@@ -447,6 +534,7 @@ const createChartOption = (yAxisData: string[], seriesData: any[], monthStart: n
         data: seriesData, // 시리즈 데이터
       },
     ],
+    universalTransition: true,
   }
 }
 </script>
