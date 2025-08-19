@@ -9,9 +9,10 @@
     <!-- <CardListView/> -->
     <!-- <SourceTreeView /> -->
     <!-- <KanbanList /> -->
-     <!-- <PostitView /> -->
-     <!-- <BranchLintList /> -->
-    <MemberSelector />
+    <!-- <PostitView /> -->
+    <!-- <BranchLintList /> -->
+    <!-- <MemberSelector /> -->
+    <AutoHeightDiv />
   </div>
 </template>
 
@@ -30,7 +31,8 @@ import { defineComponent } from 'vue'
 // import KanbanList from './views/testViews/kanban/KanbanList.vue';
 // import PostitView from './views/alert/PostitView.vue';
 // import BranchLintList from './views/testViews/BranchLintList.vue';
-import MemberSelector from './components/MemberSelector.vue'
+// import MemberSelector from './components/MemberSelector.vue'
+import AutoHeightDiv from './views/testViews/ dynamically/autoHeightDiv.vue'
 
 export default defineComponent({
   name: 'App',
@@ -46,7 +48,8 @@ export default defineComponent({
     // KanbanList,
     // PostitView
     // BranchLintList
-    MemberSelector,
+    // MemberSelector,
+    AutoHeightDiv,
   },
   data() {
     return {
