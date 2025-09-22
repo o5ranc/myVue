@@ -12,8 +12,7 @@
     <!-- <PostitView /> -->
     <!-- <BranchLintList /> -->
     <!-- <MemberSelector /> -->
-    <!-- <ElTabTestView /> -->
-    <AutoHeightDiv />
+    <StickyHeader />
   </div>
 </template>
 
@@ -34,7 +33,7 @@ import { defineComponent } from 'vue'
 // import BranchLintList from './views/testViews/BranchLintList.vue';
 // import MemberSelector from './components/MemberSelector.vue'
 // import ElTabTestView from './views/testViews/ElTabTestView.vue'
-import AutoHeightDiv from './views/testViews/ dynamically/autoHeightDiv.vue'
+import StickyHeader from './views/testViews/dynamically/StickyHeader.vue'
 
 export default defineComponent({
   name: 'App',
@@ -51,8 +50,7 @@ export default defineComponent({
     // PostitView
     // BranchLintList
     // MemberSelector,
-    // ElTabTestView,
-    AutoHeightDiv,
+    StickyHeader,
   },
   data() {
     return {
