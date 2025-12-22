@@ -3,7 +3,7 @@
     <!-- 전체 헤더 -->
     <div 
       class="sticky-header full-header" 
-      :class="{ 'hidden': isCompact }"
+      v-show="!isCompact"
     >
       <h2>헤더 테스트</h2>
       <div class="header-content">
@@ -20,7 +20,7 @@
     <!-- Compact 헤더 -->
     <div 
       class="sticky-header compact-header" 
-      :class="{ 'hidden': !isCompact }"
+      v-show="isCompact"
     >
       <div class="header-content">
         <h1 class="sticky-header-title">My Website</h1>
@@ -34,8 +34,8 @@
     </div>
     
     <!-- 컨텐츠 영역 -->
-    <div class="content">
-      <div v-for="i in 50" :key="i" class="content-section">
+    <div class="content" :class="{ 'compact-content': isCompact }">
+      <div v-for="i in 5" :key="i" class="content-section">
         <h2>섹션 {{ i }}</h2>
         <p>이것은 테스트 컨텐츠입니다. 스크롤을 아래로 내리면 헤더가 compact하게 변하고, 위로 올리면 전체 헤더가 나타납니다.</p>
         <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.</p>
@@ -57,10 +57,12 @@ const handleScroll = () => {
   // 스크롤이 임계값을 넘었을 때만 헤더 상태 변경
   if (currentScrollY > scrollThreshold) {
     if (currentScrollY > lastScrollY.value) {
-      // 아래로 스크롤 - compact 헤더 표시
+      // 아래로 스크롤할 때 compact 헤더 표시
+      console.log('아래로 스크롤')
       isCompact.value = true
-    } else {
-      // 위로 스크롤 - 전체 헤더 표시
+    } else if (currentScrollY < lastScrollY.value) {
+      // 위로 스크롤할 때만 전체 헤더 표시
+      console.log('위로 스크롤')
       isCompact.value = false
     }
   } else {
@@ -93,9 +95,6 @@ onUnmounted(() => {
   transform: translateY(0);
 }
 
-.sticky-header.hidden {
-  transform: translateY(-100%);
-}
 
 .full-header {
   height: 180px;
@@ -153,6 +152,11 @@ onUnmounted(() => {
 
 .content {
   margin-top: 180px; /* 전체 헤더 높이만큼 여백 */
+  transition: margin-top 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.compact-content {
+  margin-top: 50px; /* compact 헤더 높이만큼 여백 */
 }
 
 .content-section {

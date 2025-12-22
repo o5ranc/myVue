@@ -26,9 +26,9 @@
               <el-table-column prop="time" label="Time" width="100" />
             </el-table>
           </template>
-        </el-table-column>
-        <el-table-column>
-          <template #header>
+</el-table-column>
+<el-table-column>
+  <template #header>
             <div class="custom-header" style="width: 100%">
               <div class="column-labels">
                 <div class="label-row">
@@ -40,30 +40,15 @@
               <div class="header-bottom">통합 헤더</div>
             </div>
           </template>
-          <el-table-column
-            prop="date"
-            width="120"
-          />
-          <el-table-column
-            prop="name"
-            width="120"
-          />
-          <el-table-column
-            prop="address"
-          />
-        </el-table-column>
-      </el-table>
-      <div style="margin-top: 20px">
-        <el-table-column
-          property="name"
-          label="Name"
-          width="120"
-        />
-        <el-table-column
-          property="address"
-          label="Address"
-        />
-      </el-table> -->
+  <el-table-column prop="date" width="120" />
+  <el-table-column prop="name" width="120" />
+  <el-table-column prop="address" />
+</el-table-column>
+</el-table>
+<div style="margin-top: 20px">
+  <el-table-column property="name" label="Name" width="120" />
+  <el-table-column property="address" label="Address" />
+  </el-table> -->
       <!-- <div style="margin-top: 20px">
         <el-button @click="toggleSelection([tableData[1], tableData[2]])">
           Toggle selection status of second and third rows
@@ -81,113 +66,62 @@
       <br />
       <el-button @click="showColumnSelector = !showColumnSelector">컬럼 선택</el-button>
 
+      <!-- test radio -->
+      <el-radio-group v-model="selectedColumn">
+        <el-radio v-for="column in columns" :key="column.prop" :label="column.prop">
+          {{ column.label }}
+        </el-radio>
+      </el-radio-group>
+
       <!-- 컬럼 선택 영역 -->
-      <div
-        v-show="showColumnSelector"
-        class="column-selector"
-      >
-        <el-checkbox
-          v-model="checkAll"
-          :indeterminate="isIndeterminate"
-          @change="handleCheckAllChange"
-        >
+      <div v-show="showColumnSelector" class="column-selector">
+        <el-checkbox v-model="checkAll" :indeterminate="isIndeterminate" @change="handleCheckAllChange">
           전체 선택
         </el-checkbox>
-        <el-checkbox-group
-          v-model="checkedColumns"
-          @change="handleCheckedColumnsChange"
-        >
-          <el-checkbox
-            v-for="column in columns"
-            :key="column.prop"
-            :label="column.prop"
-          >
+        <el-checkbox-group v-model="checkedColumns" @change="handleCheckedColumnsChange">
+          <el-checkbox v-for="column in columns" :key="column.prop" :label="column.prop">
             {{ column.label }}
           </el-checkbox>
         </el-checkbox-group>
       </div>
     </div>
     <div>
-      <el-table
-        ref="editableTableNewRef"
-        :data="editableTableData"
-        style="width: 100%"
-        :border="true"
-      >
-        <el-table-column
-          v-if="columns.find((column) => column.prop === 'date')"
-          label="Multi Input"
-        >
+      <el-table ref="editableTableNewRef" :data="editableTableData" style="width: 100%" :border="true">
+        <el-table-column v-if="columns.find((column) => column.prop === 'date')" label="Multi Input">
           <template #default="scope">
-            <el-input
-              v-model="scope.row.multiInput"
-              type="textarea"
-              :rows="3"
-              placeholder="Please input"
-              @keydown.down="handleKeyDown($event, scope.$index, 0)"
-              @keydown.up="handleKeyUp($event, scope.$index, 0)"
+            <el-input v-model="scope.row.multiInput" type="textarea" :rows="3" placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 0)" @keydown.up="handleKeyUp($event, scope.$index, 0)"
               @keydown.left="handleKeyLeft($event, scope.$index, 0)"
-              @keydown.right="handleKeyRight($event, scope.$index, 0)"
-              :ref="
-                (el) => {
-                  if (el) inputRefs[`${scope.$index}-0`] = el
-                }
-              "
-            />
+              @keydown.right="handleKeyRight($event, scope.$index, 0)" :ref="(el) => {
+                if (el) inputRefs[`${scope.$index}-0`] = el
+              }
+                " />
           </template>
         </el-table-column>
-        <el-table-column
-          v-if="columns.find((column) => column.prop === 'name')"
-          label="Single Input"
-          width="200"
-        >
+        <el-table-column v-if="columns.find((column) => column.prop === 'name')" label="Single Input" width="200">
           <template #default="scope">
-            <el-input
-              v-model="scope.row.singleInput"
-              placeholder="Please input"
-              @keydown.down="handleKeyDown($event, scope.$index, 1)"
-              @keydown.up="handleKeyUp($event, scope.$index, 1)"
+            <el-input v-model="scope.row.singleInput" placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 1)" @keydown.up="handleKeyUp($event, scope.$index, 1)"
               @keydown.left="handleKeyLeft($event, scope.$index, 1)"
-              @keydown.right="handleKeyRight($event, scope.$index, 1)"
-              @focus="(e) => handleFocus(e, 1)"
-              :ref="
-                (el) => {
-                  if (el) inputRefs[`${scope.$index}-1`] = el
-                }
-              "
-            />
+              @keydown.right="handleKeyRight($event, scope.$index, 1)" @focus="(e) => handleFocus(e, 1)" :ref="(el) => {
+                if (el) inputRefs[`${scope.$index}-1`] = el
+              }
+                " />
           </template>
         </el-table-column>
-        <el-table-column
-          v-if="columns.find((column) => column.prop === 'address')"
-          label="Address"
-          width="200"
-        >
+        <el-table-column v-if="columns.find((column) => column.prop === 'address')" label="Address" width="200">
           <template #default="scope">
-            <el-input
-              v-model="scope.row.anotherInput"
-              placeholder="Please input"
-              @keydown.down="handleKeyDown($event, scope.$index, 2)"
-              @keydown.up="handleKeyUp($event, scope.$index, 2)"
+            <el-input v-model="scope.row.anotherInput" placeholder="Please input"
+              @keydown.down="handleKeyDown($event, scope.$index, 2)" @keydown.up="handleKeyUp($event, scope.$index, 2)"
               @keydown.left="handleKeyLeft($event, scope.$index, 2)"
-              @keydown.right="handleKeyRight($event, scope.$index, 2)"
-              :ref="
-                (el) => {
-                  if (el) inputRefs[`${scope.$index}-2`] = el
-                }
-              "
-            />
+              @keydown.right="handleKeyRight($event, scope.$index, 2)" :ref="(el) => {
+                if (el) inputRefs[`${scope.$index}-2`] = el
+              }
+                " />
           </template>
         </el-table-column>
-        <el-table-column
-          v-for="column in visibleColumns"
-          :key="column.label"
-          :prop="column.prop"
-          :label="column.label"
-          :min-width="column.minWidth"
-          :width="column.width"
-          :align="column.align"
-        ></el-table-column>
+        <el-table-column v-for="column in visibleColumns" :key="column.label" :prop="column.prop" :label="column.label"
+          :min-width="column.minWidth" :width="column.width" :align="column.align"></el-table-column>
       </el-table>
     </div>
     <!-- <div>
@@ -282,7 +216,7 @@ interface User {
   id: number
   date: string
   name: string
-  address: string 
+  address: string
   commitDetails: CommitDetail[]
 }
 
@@ -321,7 +255,7 @@ const tableData = reactive<User[]>([
     name: 'Tom',
     address: 'No. 189, Grove St, Los Angeles',
     commitDetails: [
-      { 
+      {
         message: 'Commit 1',
         user: 'John',
         time: '2021-01-01',
@@ -347,7 +281,7 @@ const tableData = reactive<User[]>([
     id: 4,
     date: '2016-05-01',
     name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',  
+    address: 'No. 189, Grove St, Los Angeles',
     commitDetails: []
   },
   {
@@ -368,7 +302,7 @@ const tableData = reactive<User[]>([
     id: 7,
     date: '2016-05-07',
     name: 'Tom',
-    address: 'No. 189, Grove St, Los Angeles',  
+    address: 'No. 189, Grove St, Los Angeles',
     commitDetails: []
   },
 ])
@@ -524,7 +458,6 @@ const handleFocus = (event: FocusEvent, colIndex: number) => {
   }
 }
 
-<<<<<<< HEAD
 const expandedRows = ref<number[]>([])
 
 const handleExpandChange = (row: User, expanded: boolean) => {
@@ -535,7 +468,7 @@ const handleExpandChange = (row: User, expanded: boolean) => {
     const index = expandedRows.value.indexOf(row.id)
     console.log(index)
     if (index > -1) {
-    console.log(expandedRows.value)
+      console.log(expandedRows.value)
       expandedRows.value.splice(index, 1)
     }
   }
@@ -544,6 +477,9 @@ const handleExpandChange = (row: User, expanded: boolean) => {
 // 컬럼 선택 관련 상태 추가
 const showColumnSelector = ref(false)
 const checkedColumns = ref(columns.value.map((col) => col.prop))
+
+// 라디오 버튼 선택된 컬럼
+const selectedColumn = ref<string>('')
 
 // 체크박스 관련 메서드 수정
 const handleCheckAllChange = (val: boolean) => {
@@ -563,7 +499,7 @@ const visibleColumns = computed(() => {
   return columns.value.filter((col) => checkedColumns.value.includes(col.prop))
 })
 
-const handleClick = () => {}
+const handleClick = () => { }
 </script>
 
 <style scoped>
@@ -615,6 +551,5 @@ const handleClick = () => {}
   border: 1px solid #dcdfe6;
   border-radius: 4px;
   background-color: #fff;
->>>>>>> a2982a2b1f64d8e9a103ae87771680230b7b9f6b
 }
 </style>

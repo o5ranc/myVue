@@ -3,7 +3,7 @@
     <!-- <ProductList /> -->
     <!-- <ShoppingCart /> -->
     <!-- <TestView /> -->
-    <!-- <ElTableTestView /> -->
+    <ElTableTestView />
     <!-- <ChartTestView /> -->
     <!-- <SourceView /> -->
     <!-- <CardListView/> -->
@@ -12,7 +12,10 @@
     <!-- <PostitView /> -->
     <!-- <BranchLintList /> -->
     <!-- <MemberSelector /> -->
-    <StickyHeader />
+    <!-- <StickyHeader /> -->
+    <!-- <AlignTextView /> -->
+    <!-- <SpinnerBorder /> -->
+    <!-- <SourceView></SourceView> -->
   </div>
 </template>
 
@@ -23,7 +26,7 @@ import { defineComponent } from 'vue'
 // import ProductList from './components/ProductList.vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
 // import TestView from './views/testViews/testeView.vue'
-// import ElTableTestView from "./views/testViews/ElTableTestView.vue"
+import ElTableTestView from "./views/testViews/ElTableTestView.vue"
 // import ChartTestView from './views/testViews/ChartTestView.vue'
 // import SourceView from './views/testViews/SourceView.vue'
 // import CardListView from './views/testViews/CardListView.vue'
@@ -33,7 +36,10 @@ import { defineComponent } from 'vue'
 // import BranchLintList from './views/testViews/BranchLintList.vue';
 // import MemberSelector from './components/MemberSelector.vue'
 // import ElTabTestView from './views/testViews/ElTabTestView.vue'
-import StickyHeader from './views/testViews/dynamically/StickyHeader.vue'
+// import StickyHeader from './views/testViews/dynamically/StickyHeader.vue'
+// import AlignTextView from './views/testViews/Align/AlignTextView.vue';
+// import SpinnerBorder from './views/testViews/SpinnerBorder.vue';
+// import SourceView from './views/testViews/SourceView.vue';
 
 export default defineComponent({
   name: 'App',
@@ -41,7 +47,8 @@ export default defineComponent({
     // ProductList,
     // ShoppingCart
     // TestView,
-    // ElTableTestView,
+    ElTableTestView,
+    // ElTabTestView,
     // ChartTestView,
     // SourceView,
     // CardListView,
@@ -50,7 +57,10 @@ export default defineComponent({
     // PostitView
     // BranchLintList
     // MemberSelector,
-    StickyHeader,
+    // StickyHeader,
+    // AlignTextView,
+    // SpinnerBorder,
+    // SourceView
   },
   data() {
     return {
