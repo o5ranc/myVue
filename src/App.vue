@@ -26,7 +26,7 @@ import { defineComponent } from 'vue'
 // import ProductList from './components/ProductList.vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
 // import TestView from './views/testViews/testeView.vue'
-import ElTableTestView from "./views/testViews/ElTableTestView.vue"
+import ElTableTestView from "./views/testViews/elTableTestView.vue"
 // import ChartTestView from './views/testViews/ChartTestView.vue'
 // import SourceView from './views/testViews/SourceView.vue'
 // import CardListView from './views/testViews/CardListView.vue'

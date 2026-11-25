@@ -6,16 +6,21 @@
 
 | 항목 | 내용 |
 | --- | --- |
-| 파일명 대소문자 | `App.vue`가 `./views/testViews/ElTableTestView.vue`를 import하지만 실제 파일은 `elTableTestView.vue`입니다. 대소문자를 구분하는 환경(Linux CI, Docker 빌드)에서 모듈을 찾지 못합니다. `tsconfig.json`의 `forceConsistentCasingInFileNames: true`와도 어긋납니다 |
-| 스토어 미등록 | `main.ts`에서 Vuex 스토어와 Pinia를 모두 등록하지 않습니다. `ProductList.vue`, `ShoppingCart.vue`, Vuex 멤버 스토어, Pinia 카운터는 화면에 올려도 동작하지 않습니다 |
-| 쇼핑카트 모듈 미연결 | `src/stores/modules/cart.js`, `products.js`가 `src/store/index.ts`의 `modules`에 들어 있지 않습니다 |
-| Vue 2 필터 문법 | `ProductList.vue`, `ShoppingCart.vue`가 `{{ price | currency }}` 형태의 필터를 씁니다. Vue 3에서 제거된 문법이라 컴파일 에러가 납니다 |
 | 없는 모듈 import | `InputTodo.vue`, `List.vue`가 `../constant`를 import하지만 해당 파일이 없습니다. `HelloWorld.vue`는 설치되지 않은 `vue-class-component`를 씁니다 |
 | `TreeView` 펼침 | `toggleItem`이 `console.log`만 합니다. Vue 3에서 `this.$set`이 사라졌기 때문이며, `item.isOpen = !item.isOpen` 직접 대입으로 바꾸면 동작합니다 |
 | `index.html` | `<title>` 여는 태그가 없고 `<%= htmlWebpackPlugin.options.title %>` 뒤에 `</title>`만 있습니다. 또 `favicons.ico`를 참조하는데 실제 파일은 `public/favicon.ico`입니다 |
 | 라우팅 | `App.vue`에 `<router-view />`가 없어 `/member` 등 라우트가 화면에 그려지지 않습니다. `/` 라우트는 `App.vue` 자신을 가리킵니다 |
 | 칸반 이미지 | `KanbanList.vue`, `KanbanItem.vue`의 이미지 경로가 `/path/to/profile.jpg` 자리표시자입니다 |
 | `KanbanItem.vue` CSS | `.kanban-item` 블록 닫는 중괄호 뒤에 글자 `S`가 섞여 있어 이후 규칙이 무시될 수 있습니다 |
+
+## 수정 완료
+
+| 항목 | 수정 내용 |
+| --- | --- |
+| 파일명 대소문자 | `App.vue`가 `ElTableTestView.vue`(대문자)로 import하던 것을 실제 파일명 `elTableTestView.vue`에 맞췄습니다. Linux 등 대소문자를 구분하는 환경에서도 빌드됩니다 |
+| 스토어 미등록 | `main.ts`에서 Vuex 스토어(`app.use(store)`)와 Pinia(`app.use(createPinia())`)를 등록했습니다 |
+| 쇼핑카트 모듈 미연결 | `src/store/index.ts`에 `cart`, `products` 모듈을 `member`와 함께 등록했습니다. `products.js`의 빈 `getters`에는 타입 검사를 통과하도록 JSDoc 타입을 붙였습니다 |
+| Vue 2 필터 문법 | `ProductList.vue`, `ShoppingCart.vue`의 `{{ price \| currency }}`를 `{{ formatCurrency(price) }}`로 바꿨습니다. 포맷 함수는 `src/utils/format.ts`에 있습니다. (Vue 3 템플릿 컴파일러는 `\|`를 비트 OR 연산자로 해석해 컴파일은 되지만, 실행 시 `currency`가 정의되지 않아 금액이 제대로 표시되지 않았습니다) |
 
 ## 정리 후보
 

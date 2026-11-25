@@ -21,7 +21,7 @@ Vue 3 + TypeScript 학습용 저장소입니다. 하나의 완성된 애플리�
 | 언어 | TypeScript 5.4, 일부 JavaScript |
 | UI | Element Plus 2.7, Bootstrap 5, 직접 작성한 CSS |
 | 라우팅 | Vue Router 4 (현재는 거의 사용하지 않음) |
-| 상태 관리 | Vuex 4, Pinia 2 (둘 다 포함되어 있으나 앱에 등록되어 있지 않음) |
+| 상태 관리 | Vuex 4 (멤버, 쇼핑카트), Pinia 2 (카운터 예제) |
 | 차트 | ECharts 5 (실제 사용). ApexCharts도 설치되어 있으나 미사용 |
 | 에디터·뷰어 | CodeMirror 6, CKEditor 5, Quill, TinyMCE, `diff` |
 | 빌드 | Vue CLI 5 (webpack) — 실제 실행 경로. Vite 6 설정 파일도 함께 존재 |
@@ -76,6 +76,7 @@ src/
 ├── stores/              # Pinia 스토어 + Vuex 쇼핑카트 모듈
 ├── services/            # axios 기반 API 호출 계층
 ├── types/               # 공용 TypeScript 타입
+├── utils/               # 포맷 함수 등 공용 유틸
 ├── api/                 # 목(mock) API
 └── data/                # 생성된 JSON 데이터
 ```

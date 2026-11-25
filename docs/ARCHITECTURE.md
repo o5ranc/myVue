@@ -13,12 +13,13 @@ public/index.html  →  src/main.ts  →  src/App.vue  →  (주석으로 선택
 ```ts
 const app = createApp(App)
 app.use(router)
+app.use(store) // Vuex: member, cart, products 모듈
+app.use(createPinia()) // Pinia: stores/counter.ts
 app.use(ElementPlus)
 app.mount('#app')
 ```
 
-- Vue Router와 Element Plus만 등록합니다.
-- Pinia 생성 코드는 주석 처리되어 있고, Vuex 스토어는 애초에 import되지 않습니다. 즉 **스토어를 쓰는 컴포넌트는 지금 상태로 렌더링하면 동작하지 않습니다.**
+- Vue Router, Vuex 스토어, Pinia, Element Plus를 등록합니다. Vuex와 Pinia는 학습 목적으로 함께 쓰고 있으며 서로 간섭하지 않습니다.
 - Element Plus는 전역 등록이라 모든 화면에서 `el-*` 컴포넌트를 바로 쓸 수 있습니다.
 
 ### `src/App.vue`
@@ -43,13 +44,13 @@ app.mount('#app')
 
 ## 3. 상태 관리
 
-두 가지 방식이 섞여 있고, **둘 다 앱에 등록되어 있지 않습니다.**
+Vuex와 Pinia 두 가지 방식이 함께 있고, `main.ts`에서 둘 다 등록합니다.
 
 ### Vuex — 멤버 (`src/store/`)
 
 | 파일 | 역할 |
 | --- | --- |
-| `index.ts` | `createStore`로 `member` 모듈 등록 |
+| `index.ts` | `createStore`로 `member`, `cart`, `products` 모듈 등록 |
 | `memberStore.ts` | 멤버 목록·선택 목록·페이지·검색어 상태, 무한 스크롤용 mutations/actions (`namespaced: true`) |
 | `types.ts` | `RootState`, `MemberState` 타입 정의 |
 
@@ -65,11 +66,11 @@ Vuex 공식 예제를 옮겨 둔 코드입니다.
 | `cart.js` | 장바구니 담기·결제 (`cart` 모듈) |
 | `src/api/shop.js` | `setTimeout` 기반 목 API, 결제는 50% 확률로 실패 |
 
-`src/store/index.ts`에 이 두 모듈이 등록되어 있지 않아, `ProductList.vue` / `ShoppingCart.vue`는 현재 구성으로는 데이터를 받지 못합니다.
+두 모듈은 `src/store/index.ts`에서 `cart`, `products`라는 이름으로 등록되며, `ProductList.vue` / `ShoppingCart.vue`가 이 모듈을 씁니다. 금액 표시는 `src/utils/format.ts`의 `formatCurrency`를 사용합니다.
 
 ### Pinia (`src/stores/counter.ts`)
 
-`useCounterStore` — `count`, `doubleCount`, `increment`만 있는 setup 스타일 최소 예제입니다. `main.ts`에서 Pinia를 생성하지 않으므로 사용되지 않습니다.
+`useCounterStore` — `count`, `doubleCount`, `increment`만 있는 setup 스타일 최소 예제입니다. Pinia는 등록되어 있지만 이 스토어를 쓰는 화면은 아직 없습니다.
 
 ## 4. 서비스·타입·데이터
 

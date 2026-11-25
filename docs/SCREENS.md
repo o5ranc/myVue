@@ -14,8 +14,6 @@
 - 셀 안 `el-input`을 직접 다루는 인라인 편집: `inputRefs`로 포커스 이동, `handleKeyDown`/`handleKeyUp`으로 방향키·엔터 이동, textarea일 때는 줄 위치를 계산해서 다음 행으로 넘어갈지 판단
 - 반응성 확인용 "test update" 버튼 — `tableData[0].commitDetails[0].user`를 직접 바꿔 화면이 갱신되는지 봅니다
 
-> 참고: `App.vue`는 이 파일을 `ElTableTestView.vue`(대문자 E)로 import하고 있지만 실제 파일명은 `elTableTestView.vue`입니다. macOS/Windows에서는 동작하지만 Linux 등 대소문자를 구분하는 환경에서는 빌드가 실패합니다.
-
 ### `BranchLintList.vue` — 진행 상태가 있는 목록
 
 브랜치별 린트 검사 결과 목록 UI입니다. `el-tag`로 진행중/성공/실패를 구분하고, 실패한 행에만 "재조회"와 "더보기" 버튼을 보여 줍니다. "더보기"를 누르면 확장 행에 커밋 메시지·작성자·시간·SHA가 나오는 중첩 테이블이 펼쳐집니다. 진행률(`progress`)에 따라 표시가 달라지는 패턴을 확인하는 화면입니다.
@@ -90,8 +88,8 @@ flex 안에서 라벨과 긴 본문을 나란히 두었을 때 줄바꿈과 넘�
 | `InfiniteComponent.vue` | 세 개 컬럼이 각자 독립적으로 무한 스크롤되는 구조. 컬럼별 페이지 번호를 따로 관리하고 스크롤 끝에서 10개씩 추가 | `SourceView.vue` |
 | `TreeView.vue` | 자기 자신을 재귀 호출해 폴더/파일 트리를 그리는 컴포넌트. 펼침 토글은 아직 `console.log`만 하고 상태를 바꾸지 않음(Vue 3에서 `this.$set`이 없어 주석 처리된 상태) | `testViews/SourceTreeView.vue` |
 | `IndexComponent.vue` | 전달받은 인덱스 값을 테두리 안에 출력하는 디버그용 최소 컴포넌트 | `SourceView.vue` |
-| `ProductList.vue` | Vuex 쇼핑카트 예제의 상품 목록 | 미사용 (스토어 미등록) |
-| `ShoppingCart.vue` | Vuex 쇼핑카트 예제의 장바구니·결제 | 미사용 (스토어 미등록) |
+| `ProductList.vue` | Vuex 쇼핑카트 예제의 상품 목록. 재고가 없으면 담기 버튼 비활성화 | `App.vue`에 주석으로 등록 |
+| `ShoppingCart.vue` | Vuex 쇼핑카트 예제의 장바구니·결제. 결제는 목 API라 50% 확률로 실패 | `App.vue`에 주석으로 등록 |
 | `InputTodo.vue` | 투두 입력창. `../constant` 모듈을 import하지만 그 파일이 저장소에 없음 | 미사용 (import 실패) |
 | `List.vue` | 투두 목록. 파일 전체가 주석 처리된 참고용 코드 | 미사용 |
 | `HelloWorld.vue` | Vue CLI 기본 샘플. 템플릿이 주석 처리되어 있고 `vue-class-component`를 쓰지만 그 패키지가 설치되어 있지 않음 | 미사용 |
