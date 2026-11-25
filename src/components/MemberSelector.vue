@@ -92,113 +92,94 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted, computed, watch } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted, computed, watch } from 'vue'
 import debounce from 'lodash/debounce'
 import { Member } from '@/types/member'
 import membersData from '@/data/members.json'
 
 const PAGE_SIZE = 15
 
-export default defineComponent({
-  name: 'MemberSelector',
+// <script setup>의 최상위 변수·함수는 return 없이 템플릿에서 바로 사용할 수 있습니다.
+const allMembers = ref<Member[]>([])
+const availableMembers = ref<Member[]>([])
+const selectedMembers = ref<Member[]>([])
+const memberListRef = ref<HTMLElement | null>(null)
+const search = ref('')
+const selectedSearch = ref('')
+const currentPage = ref(1)
+const loading = ref(false)
 
-  setup() {
-    const allMembers = ref<Member[]>([])
-    const availableMembers = ref<Member[]>([])
-    const selectedMembers = ref<Member[]>([])
-    const memberListRef = ref<HTMLElement | null>(null)
-    const search = ref('')
-    const selectedSearch = ref('')
-    const currentPage = ref(1)
-    const loading = ref(false)
+// 검색어에 따라 필터링된 전체 멤버 목록
+const filteredMembers = computed(() => {
+  if (!search.value) return availableMembers.value
+  const searchLower = search.value.toLowerCase().trim()
+  return availableMembers.value.filter((member) => member.name.toLowerCase().includes(searchLower))
+})
 
-    // 검색어에 따라 필터링된 전체 멤버 목록
-    const filteredMembers = computed(() => {
-      if (!search.value) return availableMembers.value
-      const searchLower = search.value.toLowerCase().trim()
-      return availableMembers.value.filter((member) => member.name.toLowerCase().includes(searchLower))
-    })
+// 현재 페이지에 표시될 멤버 목록
+const displayedMembers = computed(() => {
+  const start = 0
+  const end = currentPage.value * PAGE_SIZE
+  return filteredMembers.value.slice(start, end)
+})
 
-    // 현재 페이지에 표시될 멤버 목록
-    const displayedMembers = computed(() => {
-      const start = 0
-      const end = currentPage.value * PAGE_SIZE
-      return filteredMembers.value.slice(start, end)
-    })
+// 선택된 멤버 중 검색어에 맞는 멤버 목록
+const filteredSelectedMembers = computed(() => {
+  if (!selectedSearch.value) return selectedMembers.value
+  const searchLower = selectedSearch.value.toLowerCase().trim()
+  return selectedMembers.value.filter((member) => member.name.toLowerCase().includes(searchLower))
+})
 
-    // 선택된 멤버 중 검색어에 맞는 멤버 목록
-    const filteredSelectedMembers = computed(() => {
-      if (!selectedSearch.value) return selectedMembers.value
-      const searchLower = selectedSearch.value.toLowerCase().trim()
-      return selectedMembers.value.filter((member) => member.name.toLowerCase().includes(searchLower))
-    })
+// 검색어 변경 시 페이지 리셋 (200ms 디바운스 적용)
+const debouncedReset = debounce(() => {
+  currentPage.value = 1
+}, 200)
 
-    // 검색어 변경 시 페이지 리셋 (200ms 디바운스 적용)
-    const debouncedReset = debounce(() => {
-      currentPage.value = 1
-    }, 200)
+// search 값 감시
+watch(search, () => {
+  debouncedReset()
+})
 
-    // search 값 감시
-    watch(search, () => {
-      debouncedReset()
-    })
+const handleScroll = async (event: Event) => {
+  const element = event.target as HTMLElement
+  if (
+    !loading.value &&
+    element.scrollHeight - element.scrollTop <= element.clientHeight + 100 &&
+    displayedMembers.value.length < filteredMembers.value.length
+  ) {
+    loading.value = true
+    // 실제 API 호출을 시뮬레이션하기 위한 지연
+    await new Promise((resolve) => setTimeout(resolve, 500))
+    currentPage.value++
+    loading.value = false
+  }
+}
 
-    const handleScroll = async (event: Event) => {
-      const element = event.target as HTMLElement
-      if (
-        !loading.value &&
-        element.scrollHeight - element.scrollTop <= element.clientHeight + 100 &&
-        displayedMembers.value.length < filteredMembers.value.length
-      ) {
-        loading.value = true
-        // 실제 API 호출을 시뮬레이션하기 위한 지연
-        await new Promise((resolve) => setTimeout(resolve, 500))
-        currentPage.value++
-        loading.value = false
-      }
-    }
+const selectMember = (member: Member) => {
+  // 선택된 멤버 목록에 검색어가 있다면 초기화
+  if (selectedSearch.value) {
+    selectedSearch.value = ''
+  }
+  selectedMembers.value.push(member)
+  availableMembers.value = availableMembers.value.filter((m) => m.id !== member.id)
+}
 
-    const selectMember = (member: Member) => {
-      // 선택된 멤버 목록에 검색어가 있다면 초기화
-      if (selectedSearch.value) {
-        selectedSearch.value = ''
-      }
-      selectedMembers.value.push(member)
-      availableMembers.value = availableMembers.value.filter((m) => m.id !== member.id)
-    }
+const unselectMember = (member: Member) => {
+  // 멤버 목록에 검색어가 있다면 초기화
+  if (search.value) {
+    search.value = ''
+    currentPage.value = 1
+  }
+  selectedMembers.value = selectedMembers.value.filter((m) => m.id !== member.id)
+  availableMembers.value.push(member)
+  // 정렬을 유지하기 위해 id 기준으로 정렬
+  availableMembers.value.sort((a, b) => a.id - b.id)
+}
 
-    const unselectMember = (member: Member) => {
-      // 멤버 목록에 검색어가 있다면 초기화
-      if (search.value) {
-        search.value = ''
-        currentPage.value = 1
-      }
-      selectedMembers.value = selectedMembers.value.filter((m) => m.id !== member.id)
-      availableMembers.value.push(member)
-      // 정렬을 유지하기 위해 id 기준으로 정렬
-      availableMembers.value.sort((a, b) => a.id - b.id)
-    }
-
-    onMounted(() => {
-      allMembers.value = membersData.members
-      availableMembers.value = [...allMembers.value]
-    })
-
-    return {
-      displayedMembers,
-      filteredMembers,
-      selectedMembers,
-      loading,
-      search,
-      selectedSearch,
-      filteredSelectedMembers,
-      memberListRef,
-      handleScroll,
-      selectMember,
-      unselectMember,
-    }
-  },
+onMounted(() => {
+  allMembers.value = membersData.members
+  availableMembers.value = [...allMembers.value]
 })
 </script>
 

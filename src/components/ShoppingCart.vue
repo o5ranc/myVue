@@ -15,25 +15,26 @@
   </div>
 </template>
 
-<script>
-import { mapGetters, mapState } from 'vuex'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 import { formatCurrency } from '@/utils/format'
 
-export default {
-  computed: {
-    ...mapState({
-      checkoutStatus: state => state.cart.checkoutStatus
-    }),
-    ...mapGetters('cart', {
-      products: 'cartProducts',
-      total: 'cartTotalPrice'
-    })
-  },
-  methods: {
-    formatCurrency,
-    checkout(products) {
-      this.$store.dispatch('cart/checkout', products)
-    }
-  }
+interface CartProduct {
+  id: number
+  title: string
+  price: number
+  quantity: number
+}
+
+// mapState / mapGetters 대신 useStore() + computed로 같은 값을 만듭니다.
+const store = useStore()
+
+const checkoutStatus = computed<string | null>(() => store.state.cart.checkoutStatus)
+const products = computed<CartProduct[]>(() => store.getters['cart/cartProducts'])
+const total = computed<number>(() => store.getters['cart/cartTotalPrice'])
+
+function checkout(items: CartProduct[]) {
+  store.dispatch('cart/checkout', items)
 }
 </script>

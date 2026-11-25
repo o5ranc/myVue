@@ -102,7 +102,7 @@
     </div>
 </template>
 
-<script lang="ts">
+<script setup lang="ts">
 import { Codemirror } from 'vue-codemirror'
 import { EditorView } from '@codemirror/view'
 // import { EditorView, keymap } from '@codemirror/view'
@@ -111,7 +111,7 @@ import { javascript } from '@codemirror/lang-javascript'
 import { css } from '@codemirror/lang-css'
 import { markdown } from '@codemirror/lang-markdown'
 import { oneDark, oneDarkTheme } from '@codemirror/theme-one-dark'
-import { reactive, readonly, ref, nextTick, defineComponent, onMounted } from 'vue'
+import { reactive, ref, nextTick, onMounted } from 'vue'
 import { ArrowDown, ArrowUp } from '@element-plus/icons-vue'
 import type { ElTable } from 'element-plus'
 import FileDiffViewer from '@/components/FileDiffViewer.vue'
@@ -127,47 +127,44 @@ interface IState {
   selectIndex: number
 }
 
-export default defineComponent({
-  components: {
-    Codemirror,
-    FileDiffViewer,
-    IndexComponent,
-    InfiniteComponent,
-  },
+const preventEvent = () => {
+  return EditorView.domEventHandlers({
+    copy: (event) => {
+      event.preventDefault()
+      alert('Copy is disabled!')
+      console.log('Disable copy event!')
+    },
+    cut: (event) => {
+      event.preventDefault()
+      console.log('Disable cut event!')
+    },
+    paste: (event) => {
+      event.preventDefault()
+      console.log('Disable paste event!')
+    },
+  })
+}
 
-  setup() {
-    const preventEvent = () => {
-      return EditorView.domEventHandlers({
-        copy: (event) => {
-          event.preventDefault()
-          alert('Copy is disabled!')
-          console.log('Disable copy event!')
-        },
-        cut: (event) => {
-          event.preventDefault()
-          console.log('Disable cut event!')
-        },
-        paste: (event) => {
-          event.preventDefault()
-          console.log('Disable paste event!')
-        },
-      })
-    }
+const tableRef = ref<InstanceType<typeof ElTable> | null>(null)
 
-    const tableRef = ref<InstanceType<typeof ElTable> | null>(null)
+const state = reactive<IState>({
+  extensions: [javascript(), preventEvent()],
+  isSideView: true,
+  tableMaxHeight: 250,
+  isTableExpanded: false,
+  selectIndex: -1,
+})
 
-    const state = reactive<IState>({
-      extensions: [javascript(), preventEvent()],
-      isSideView: true,
-      tableMaxHeight: 250,
-      isTableExpanded: false,
-      selectIndex: -1,
-    })
+// 파일 비교 컴포넌트에 넘길 내용
+// (기존 setup()의 return에서 빈 문자열로 덮어쓰고 있어서 동일하게 빈 값으로 둡니다.
+//  비교 결과를 보려면 'sdfasdfsdfsdfsfsdfsdfs' / 'sdfasdfsdfsdfsfsdfsdfs111121212121212112' 같은 값을 넣어 보세요.)
+const oldFileContent = ref('')
+const newFileContent = ref('')
+// const fileId = ref('') // 파일 ID
+// const oldVersion = ref('') // 이전 버전 번호
+// const newVersion = ref('') // 현재 버전 번호
 
-    const oldFileContent = ref('sdfasdfsdfsdfsfsdfsdfs')
-    const newFileContent = ref('sdfasdfsdfsdfsfsdfsdfs111121212121212112')
-
-    const code = ref(`
+const code = ref(`
 /* GitLab은 기본적으로 다음과 같은 폰트를 사용합니다:
 
 폰트 패밀리: Menlo, Monaco, "Courier New", monospace
@@ -179,163 +176,143 @@ export default defineComponent({
 // for문, if문, %(나머지) 연산자를 사용해 보세요.
 
 function sumOdd(arr) {
-    let sum = 0;
-    // 이 부분을 완성해 보세요.
-    for (let i = 0; i < arr.length; i++) {
-        if (arr[i] % 2 === 1) sum += arr[i];
-    }
-    return sum;
+let sum = 0;
+// 이 부분을 완성해 보세요.
+for (let i = 0; i < arr.length; i++) {
+    if (arr[i] % 2 === 1) sum += arr[i];
+}
+return sum;
 }
 
 const result = sumOdd( [1,2,3,4,5 ] );
 console.log(result); // 출력 결과: 9`)
 
-    //     const onClickCSSType = () => {
-    //       code.value = `//* .gowun-batang-regular {
-    //   font-family: "Gowun Batang", serif;
-    //   font-weight: 400;
-    //   font-style: normal;
-    // } */
+//     const onClickCSSType = () => {
+//       code.value = `//* .gowun-batang-regular {
+//   font-family: "Gowun Batang", serif;
+//   font-weight: 400;
+//   font-style: normal;
+// } */
 
-    // * {
-    //   font-family: "Noto Sans KR", sans-serif !important;
-    //   font-optical-sizing: auto;
-    //   font-weight: 400 !important;
-    //   font-style: normal;
-    // }
+// * {
+//   font-family: "Noto Sans KR", sans-serif !important;
+//   font-optical-sizing: auto;
+//   font-weight: 400 !important;
+//   font-style: normal;
+// }
 
-    // .to-block {
-    //   display: block;
-    // }
+// .to-block {
+//   display: block;
+// }
 
-    // .btn-nobtn {
-    //   background-color: transparent;
-    //   border: 0px;
-    //   color: #ffffff;
-    //   cursor: pointer;
-    // }
-    // `
-    //       state.extensions = [css(), preventEvent()]
-    //     }
+// .btn-nobtn {
+//   background-color: transparent;
+//   border: 0px;
+//   color: #ffffff;
+//   cursor: pointer;
+// }
+// `
+//       state.extensions = [css(), preventEvent()]
+//     }
 
-    //     const onClickMDType = () => {
-    //       code.value = `# 가장큰 크기의 text로 변
-    // ## 그다음 작은 크기위 text로 변환
-    // ### 그다음 작은 크기의 text로 변환
-    // #### 그다음 작은 크기의 text로 변환
-    // ##### 그다음 작은 크기의 text로 변환
-    // ###### 그다음 작은 크기의 text로 변환
-    // `
-    //       state.extensions = [markdown(), preventEvent()]
-    //     }
+//     const onClickMDType = () => {
+//       code.value = `# 가장큰 크기의 text로 변
+// ## 그다음 작은 크기위 text로 변환
+// ### 그다음 작은 크기의 text로 변환
+// #### 그다음 작은 크기의 text로 변환
+// ##### 그다음 작은 크기의 text로 변환
+// ###### 그다음 작은 크기의 text로 변환
+// `
+//       state.extensions = [markdown(), preventEvent()]
+//     }
 
-    const tableData = ref([
-      {
-        date: '2024-03-15',
-        name: 'Tom',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2024-03-16',
-        name: 'John',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2024-03-17',
-        name: 'Morgan',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2024-03-18',
-        name: 'Sarah',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2024-03-19',
-        name: 'James',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2024-03-20',
-        name: 'Emma',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-      {
-        date: '2024-03-21',
-        name: 'Michael',
-        address: 'No. 189, Grove St, Los Angeles',
-      },
-    ])
+const tableData = ref([
+  {
+    date: '2024-03-15',
+    name: 'Tom',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2024-03-16',
+    name: 'John',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2024-03-17',
+    name: 'Morgan',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2024-03-18',
+    name: 'Sarah',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2024-03-19',
+    name: 'James',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2024-03-20',
+    name: 'Emma',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+  {
+    date: '2024-03-21',
+    name: 'Michael',
+    address: 'No. 189, Grove St, Los Angeles',
+  },
+])
 
-    interface IRow {
-      date: string
-      name: string
-      address: string
-    }
-    const onFileClick = (row: IRow) => {
-      state.selectIndex = tableData.value.indexOf(row)
-    }
+interface IRow {
+  date: string
+  name: string
+  address: string
+}
+const onFileClick = (row: IRow) => {
+  state.selectIndex = tableData.value.indexOf(row)
+}
 
-    const toggleTableHeight = () => {
-      state.isTableExpanded = !state.isTableExpanded
+const toggleTableHeight = () => {
+  state.isTableExpanded = !state.isTableExpanded
 
-      if (state.isTableExpanded) {
-        // 테이블이 확장될 때는 약간의 지연을 주어 DOM이 업데이트될 시간을 줍니다
-        nextTick(() => {
-          if (tableRef.value) {
-            const table = tableRef.value.$el
-            const headerHeight = table.querySelector('.el-table__header-wrapper')?.offsetHeight || 0
-            const bodyWrapper = table.querySelector('.el-table__body-wrapper')
-            const bodyTable = bodyWrapper?.querySelector('.el-table__body')
-            const fullHeight = (bodyTable?.offsetHeight || 0) + headerHeight + 10 // 여유 공간 10px 추가
+  if (state.isTableExpanded) {
+    // 테이블이 확장될 때는 약간의 지연을 주어 DOM이 업데이트될 시간을 줍니다
+    nextTick(() => {
+      if (tableRef.value) {
+        const table = tableRef.value.$el
+        const headerHeight = table.querySelector('.el-table__header-wrapper')?.offsetHeight || 0
+        const bodyWrapper = table.querySelector('.el-table__body-wrapper')
+        const bodyTable = bodyWrapper?.querySelector('.el-table__body')
+        const fullHeight = (bodyTable?.offsetHeight || 0) + headerHeight + 10 // 여유 공간 10px 추가
 
-            console.log(tableRef.value.$el)
-            console.log(`table : ${table}`, { ...table })
-            console.log(`headerHeight : ${headerHeight}`)
-            console.dir(`bodyWrapper : ${bodyWrapper}`)
-            console.dir(`bodyTable : ${bodyTable}`)
-            console.log(`bodyTable?.offsetHeight  : ${bodyTable?.offsetHeight}`)
-            console.log(`fullHeight : ${fullHeight}`)
+        console.log(tableRef.value.$el)
+        console.log(`table : ${table}`, { ...table })
+        console.log(`headerHeight : ${headerHeight}`)
+        console.dir(`bodyWrapper : ${bodyWrapper}`)
+        console.dir(`bodyTable : ${bodyTable}`)
+        console.log(`bodyTable?.offsetHeight  : ${bodyTable?.offsetHeight}`)
+        console.log(`fullHeight : ${fullHeight}`)
 
-            state.tableMaxHeight = fullHeight
-          }
-        })
-      } else {
-        state.tableMaxHeight = 250
-      }
-    }
-
-    // Add onMounted hook
-    onMounted(() => {
-      if (tableData.value.length > 0) {
-        // Set selectIndex to 0 (first row)
-        state.selectIndex = 0
-
-        // Optionally, you can also highlight the row in the table
-        if (tableRef.value) {
-          tableRef.value.setCurrentRow(tableData.value[0])
-        }
+        state.tableMaxHeight = fullHeight
       }
     })
+  } else {
+    state.tableMaxHeight = 250
+  }
+}
 
-    return {
-      state,
-      code,
-      // onClickCSSType,
-      // onClickMDType,
-      tableData,
-      tableRef,
-      toggleTableHeight,
-      ArrowDown,
-      ArrowUp,
-      oldFileContent: '',
-      newFileContent: '',
-      fileId: '', // 파일 ID
-      oldVersion: '', // 이전 버전 번호
-      newVersion: '', // 현재 버전 번호
-      onFileClick,
+// Add onMounted hook
+onMounted(() => {
+  if (tableData.value.length > 0) {
+    // Set selectIndex to 0 (first row)
+    state.selectIndex = 0
+
+    // Optionally, you can also highlight the row in the table
+    if (tableRef.value) {
+      tableRef.value.setCurrentRow(tableData.value[0])
     }
-  },
+  }
 })
 </script>
 

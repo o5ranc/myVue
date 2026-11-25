@@ -4,98 +4,90 @@
   </div>
 </template>
 
-<script>
+<script setup lang="ts">
+import { ref } from 'vue'
 import TreeView from '@/components/TreeView.vue'
+import type { TreeItem } from '@/components/TreeView.vue'
 
-export default {
-  name: 'SourceTreeView',
-  components: {
-    TreeView,
+const treeData = ref<TreeItem[]>([
+  {
+    name: '.idea',
+    type: 'folder',
+    isOpen: false,
+    children: [],
   },
-  data() {
-    return {
-      treeData: [
-        {
-          name: '.idea',
-          type: 'folder',
-          isOpen: false,
-          children: [],
-        },
-        {
-          name: '.vscode',
-          type: 'folder',
-          isOpen: false,
-          children: [],
-        },
-        {
-          name: 'public',
-          type: 'folder',
-          isOpen: true,
-          children: [
-            {
-              name: 'img',
-              type: 'folder',
-              isOpen: false,
-              children: [],
-            },
-            {
-              name: 'workers',
-              type: 'folder',
-              isOpen: false,
-              children: [],
-            },
-            {
-              name: 'favicon.ico',
-              type: 'file',
-            },
-            {
-              name: 'index.html',
-              type: 'file',
-            },
-            {
-              name: 'logo192.png',
-              type: 'file',
-            },
-            {
-              name: 'logo512.png',
-              type: 'file',
-            },
-            {
-              name: 'manifest.json',
-              type: 'file',
-            },
-            {
-              name: 'robots.txt',
-              type: 'file',
-            },
-          ],
-        },
-        {
-          name: 'src',
-          type: 'folder',
-          isOpen: false,
-          children: [],
-        },
-        {
-          name: '.gitignore',
-          type: 'file',
-        },
-        {
-          name: 'README.md',
-          type: 'file',
-        },
-        {
-          name: 'package.json',
-          type: 'file',
-        },
-        {
-          name: 'yarn.lock',
-          type: 'file',
-        },
-      ],
-    }
+  {
+    name: '.vscode',
+    type: 'folder',
+    isOpen: false,
+    children: [],
   },
-}
+  {
+    name: 'public',
+    type: 'folder',
+    isOpen: true,
+    children: [
+      {
+        name: 'img',
+        type: 'folder',
+        isOpen: false,
+        children: [],
+      },
+      {
+        name: 'workers',
+        type: 'folder',
+        isOpen: false,
+        children: [],
+      },
+      {
+        name: 'favicon.ico',
+        type: 'file',
+      },
+      {
+        name: 'index.html',
+        type: 'file',
+      },
+      {
+        name: 'logo192.png',
+        type: 'file',
+      },
+      {
+        name: 'logo512.png',
+        type: 'file',
+      },
+      {
+        name: 'manifest.json',
+        type: 'file',
+      },
+      {
+        name: 'robots.txt',
+        type: 'file',
+      },
+    ],
+  },
+  {
+    name: 'src',
+    type: 'folder',
+    isOpen: false,
+    children: [],
+  },
+  {
+    name: '.gitignore',
+    type: 'file',
+  },
+  {
+    name: 'README.md',
+    type: 'file',
+  },
+  {
+    name: 'package.json',
+    type: 'file',
+  },
+  {
+    name: 'yarn.lock',
+    type: 'file',
+  },
+])
 </script>
 
 <style scoped>

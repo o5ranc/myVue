@@ -11,20 +11,21 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      selected: '',
-      options: [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-        { value: 'option3', label: 'Option 3' },
-        // Add more options as needed
-      ],
-    };
-  },
-};
+<script setup lang="ts">
+import { ref } from 'vue'
+
+interface SelectOption {
+  value: string
+  label: string
+}
+
+const selected = ref('')
+const options = ref<SelectOption[]>([
+  { value: 'option1', label: 'Option 1' },
+  { value: 'option2', label: 'Option 2' },
+  { value: 'option3', label: 'Option 3' },
+  // Add more options as needed
+])
 </script>
 
 <style scoped>

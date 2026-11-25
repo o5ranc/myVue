@@ -35,23 +35,27 @@
   </div>
 </template>
 
-<script>
-export default {
-  name: 'TreeView',
-  props: {
-    items: {
-      type: Array,
-      required: true,
-    },
-  },
-  methods: {
-    toggleItem(index) {
-      // if (this.items[index].children) {
-      //   this.$set(this.items[index], 'isOpen', !this.items[index].isOpen)
-      // }
-      console.log('### ran toggleItem : ', index)
-    },
-  },
+<script setup lang="ts">
+// <script setup> 컴포넌트는 파일 이름(TreeView)으로 자기 자신을 참조할 수 있어서
+// 템플릿의 <tree-view>가 재귀적으로 동작합니다.
+export interface TreeItem {
+  name: string
+  type: 'folder' | 'file'
+  isOpen?: boolean
+  children?: TreeItem[]
+}
+
+defineProps<{
+  items: TreeItem[]
+}>()
+
+function toggleItem(index: number) {
+  // Vue 3에서는 this.$set 없이 직접 대입하면 반응형으로 동작합니다.
+  // const item = props.items[index]
+  // if (item.children) {
+  //   item.isOpen = !item.isOpen
+  // }
+  console.log('### ran toggleItem : ', index)
 }
 </script>
 

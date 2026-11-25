@@ -14,17 +14,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref } from 'vue'
+<script setup lang="ts">
+import { ref } from 'vue'
 
-export default defineComponent({
-  setup() {
-    return {
-      reason: ref('일정변경 아하하하 우히히히 오호호호호호호'),
-      reason2: ref('배포 아하하하 우히히히 오호호호호호호 배포배포배포배 포배포변경 아하하하 우히히히 오호호호호호호'),
-    }
-  },
-})
+const reason = ref('일정변경 아하하하 우히히히 오호호호호호호')
+const reason2 = ref('배포 아하하하 우히히히 오호호호호호호 배포배포배포배 포배포변경 아하하하 우히히히 오호호호호호호')
 </script>
 
 <style scoped>

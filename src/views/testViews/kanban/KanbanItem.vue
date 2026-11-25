@@ -9,16 +9,12 @@
     </div>
   </div>
 </template>
-<script lang="ts">
-export default {
-  name: 'KanbanItem',
-  props: {
-    item: {
-      type: Object,
-      required: true
-    }
-  }
-}
+<script setup lang="ts">
+import type { KanbanCard } from './types'
+
+defineProps<{
+  item: KanbanCard
+}>()
 </script>
 
 <style scoped>
