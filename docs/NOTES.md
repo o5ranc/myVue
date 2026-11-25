@@ -17,6 +17,7 @@
 | --- | --- |
 | 메인 레이아웃·라우팅 | `App.vue`는 `<router-view />`만 두고, `layouts/MainLayout.vue`(왼쪽 2단 메뉴 + 오른쪽 화면)를 `/` 라우트로, 모든 테스트 화면을 `src/router/menu.ts` 목록에서 만든 자식 라우트로 등록했습니다. `/` 라우트가 `App.vue` 자신을 가리키던 문제와 `<router-view />`가 없던 문제가 함께 해결됐습니다. `App.vue`에 남아 있던 사이드바 상태·CSS 잔재도 지웠습니다 |
 | `index.html` | `<title>` 여는 태그를 추가하고 favicon 경로를 `favicon.ico`로 고쳤습니다. 여는 태그가 없어 제목 글자가 화면 맨 위에 그대로 찍히던 문제도 사라졌습니다 |
+| 개발 서버 ResizeObserver 오버레이 | 확장 행 안에 중첩된 `el-table`이 크기를 다시 계산할 때 브라우저가 "ResizeObserver loop completed with undelivered notifications"를 내고, `npm run serve`에서는 이것이 빨간 오류 오버레이로 화면을 덮었습니다. 동작에는 영향이 없는 경고라 `vue.config.js`의 `devServer.client.overlay.runtimeErrors`에서 이 메시지만 오버레이에서 빼도록 했습니다 |
 | 파일명 대소문자 | `App.vue`가 `ElTableTestView.vue`(대문자)로 import하던 것을 실제 파일명 `elTableTestView.vue`에 맞췄습니다. Linux 등 대소문자를 구분하는 환경에서도 빌드됩니다 |
 | 스토어 미등록 | `main.ts`에서 Vuex 스토어(`app.use(store)`)와 Pinia(`app.use(createPinia())`)를 등록했습니다 |
 | 쇼핑카트 모듈 미연결 | `src/store/index.ts`에 `cart`, `products` 모듈을 `member`와 함께 등록했습니다. `products.js`의 빈 `getters`에는 타입 검사를 통과하도록 JSDoc 타입을 붙였습니다 |

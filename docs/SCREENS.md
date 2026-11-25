@@ -8,7 +8,8 @@
 
 | 1단 (종류) | 2단 (화면) | 경로 | 파일 |
 | --- | --- | --- | --- |
-| Element Plus | 브랜치 린트 목록 | `/element/branch-lint` | `views/testViews/BranchLintList.vue` |
+| Element Plus | 3단 확장 테이블 (expand) | `/element/table-depth` | `views/testViews/ElTableDeptTestView.vue` |
+| | 브랜치 린트 목록 | `/element/branch-lint` | `views/testViews/BranchLintList.vue` |
 | | 세로 탭 (el-tabs) | `/element/tabs` | `views/testViews/ElTabTestView.vue` |
 | | ~~테이블 종합 (el-table)~~ | (`/element/table`) | `views/testViews/ElTableUiTestView.vue` — 미커밋이라 메뉴에서 뺌 |
 | 차트 · 코드 뷰어 | ECharts 차트 | `/viewer/chart` | `views/testViews/ChartTestView.vue` |
@@ -42,6 +43,20 @@
 - 두 줄 구조의 커스텀 헤더, 동적 컬럼 표시/숨김
 - 셀 안 `el-input`을 직접 다루는 인라인 편집: `inputRefs`로 포커스 이동, `handleKeyDown`/`handleKeyUp`으로 방향키·엔터 이동, textarea일 때는 줄 위치를 계산해서 다음 행으로 넘어갈지 판단
 - 반응성 확인용 "test update" 버튼 — `tableData[0].commitDetails[0].user`를 직접 바꿔 화면이 갱신되는지 봅니다
+
+### `ElTableDeptTestView.vue` — 3단 확장 테이블
+
+`el-table`의 확장 행(`type="expand"`) 안에 다시 `el-table`을 넣어 3단으로 중첩한 화면입니다. 데이터는 `{ list, totalCnt }` 응답 형태이고, 타입은 `elTableDept/types.ts`, 테스트 데이터는 `elTableDept/mockData.ts`에 있습니다.
+
+| 단 | 데이터 | 표시 내용 |
+| --- | --- | --- |
+| 1단 | `list` (배포 요청) | 요청번호, 제목, 앱, 버전, 등록일시, 배포 묶음 수, 최근 배포 상태 |
+| 2단 | `list[].dtSets` (배포 묶음) | 묶음 ID, 환경, 등록자(`regUser.userName`/`userId`), 배포 상태(`deployState`), step 진행률 |
+| 3단 | `dtSets[].hisLog` (step 이력) | step 개수만큼 `el-steps` 막대와, step별 상태(이행대기/이행시작/이행완료/실패)와 각 시각 |
+
+- 하위 배열이 비어 있는 행(`dtSets.length === 0`, `hisLog.length === 0`)은 `row-class-name`으로 `no-expand` 클래스를 붙이고 CSS로 펼침 아이콘을 숨겨 펼칠 수 없게 했습니다. `el-table`에 행별로 펼침을 막는 옵션이 없어서 쓰는 방법입니다.
+- 펼친 행은 `expand-row-keys`로 관리해서 "모두 펼치기 / 모두 접기" 버튼으로도 열고 닫습니다. 2단 테이블은 1단 행마다 따로 생기므로 `expand-change`에서 해당 테이블의 id만 갈아 끼웁니다.
+- 테스트 데이터에는 dtSets가 없거나 1개·여러 개인 요청, hisLog가 없거나 step이 1·3·4·5·6·7·8개인 묶음, `deployState`가 SUCCESS·FAIL·RUNNING·WAITING·CANCELED인 경우가 모두 들어 있습니다.
 
 ### `BranchLintList.vue` — 진행 상태가 있는 목록
 

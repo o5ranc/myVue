@@ -38,6 +38,12 @@ export const screenMenu: ScreenMenuGroup[] = [
       //   file: 'views/testViews/ElTableUiTestView.vue',
       // },
       {
+        title: '3단 확장 테이블 (expand)',
+        path: 'table-depth',
+        component: () => import('@/views/testViews/ElTableDeptTestView.vue'),
+        file: 'views/testViews/ElTableDeptTestView.vue',
+      },
+      {
         title: '브랜치 린트 목록',
         path: 'branch-lint',
         component: () => import('@/views/testViews/BranchLintList.vue'),
