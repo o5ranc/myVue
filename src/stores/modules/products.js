@@ -6,6 +6,7 @@ const state = () => ({
 });
 
 // getters
+/** @type {import('vuex').GetterTree<any, any>} */
 const getters = {};
 
 // actions
