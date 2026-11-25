@@ -7,7 +7,7 @@
         :style="{ width: `${100 / state.numbers.length}%` }">
         <div class="infinite-container"
           @scroll="handleScroll($event, i)"
-          :ref="el => scrollContainers[i] = el">
+          :ref="(el) => setScrollContainer(el, i)">
           <div v-for="(item, idx) in numArray" 
             :key="'item-' + idx"
             class="number-item">
@@ -19,61 +19,57 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, reactive, onMounted, onUnmounted, watch } from 'vue'
+<script setup lang="ts">
+import { ref, reactive, watch } from 'vue'
+import type { ComponentPublicInstance } from 'vue'
 
-export default defineComponent({
-  props: {
-    selectIndex: Number,
-  },
+defineProps<{
+  selectIndex?: number
+}>()
 
-  setup() {
-    const scrollContainers = ref<(HTMLElement | null)[]>([])
-    const state = reactive({
-      numbers: [
-        Array.from({ length: 10 }, (_, i) => i + 1),
-        Array.from({ length: 10 }, (_, i) => i + 1),
-        Array.from({ length: 10 }, (_, i) => i + 1),
-      ],
-      pages: [] as number[],
-    })
-
-    // numbers 배열 길이에 맞춰 pages 초기화
-    state.pages = Array(state.numbers.length).fill(1)
-
-    watch(
-      () => state.numbers.length,
-      (newLength) => {
-        state.pages = Array(newLength).fill(1)
-      }
-    )
-
-    const loadMore = (columnIndex: number) => {
-      const nextPage = state.pages[columnIndex] + 1
-      const startNum = state.numbers[columnIndex].length + 1
-      const newNumbers = Array.from({ length: 10 }, (_, i) => startNum + i)
-      state.numbers[columnIndex].push(...newNumbers)
-      state.pages[columnIndex] = nextPage
-    }
-
-    const handleScroll = (event: Event, columnIndex: number) => {
-      const container = event.target as HTMLElement
-      const scrollPosition = container.scrollTop + container.clientHeight
-      const totalHeight = container.scrollHeight
-      
-      // 스크롤이 하단에서 50px 이내일 때 새로운 데이터 로드
-      if (totalHeight - scrollPosition < 50) {
-        loadMore(columnIndex)
-      }
-    }
-
-    return {
-      state,
-      scrollContainers,
-      handleScroll,
-    }
-  },
+const scrollContainers = ref<(HTMLElement | null)[]>([])
+const state = reactive({
+  numbers: [
+    Array.from({ length: 10 }, (_, i) => i + 1),
+    Array.from({ length: 10 }, (_, i) => i + 1),
+    Array.from({ length: 10 }, (_, i) => i + 1),
+  ],
+  pages: [] as number[],
 })
+
+// numbers 배열 길이에 맞춰 pages 초기화
+state.pages = Array(state.numbers.length).fill(1)
+
+watch(
+  () => state.numbers.length,
+  (newLength) => {
+    state.pages = Array(newLength).fill(1)
+  },
+)
+
+// v-for 안의 함수형 ref: 각 컬럼의 스크롤 컨테이너 요소를 배열에 저장합니다.
+const setScrollContainer = (el: Element | ComponentPublicInstance | null, i: number) => {
+  scrollContainers.value[i] = el as HTMLElement | null
+}
+
+const loadMore = (columnIndex: number) => {
+  const nextPage = state.pages[columnIndex] + 1
+  const startNum = state.numbers[columnIndex].length + 1
+  const newNumbers = Array.from({ length: 10 }, (_, i) => startNum + i)
+  state.numbers[columnIndex].push(...newNumbers)
+  state.pages[columnIndex] = nextPage
+}
+
+const handleScroll = (event: Event, columnIndex: number) => {
+  const container = event.target as HTMLElement
+  const scrollPosition = container.scrollTop + container.clientHeight
+  const totalHeight = container.scrollHeight
+
+  // 스크롤이 하단에서 50px 이내일 때 새로운 데이터 로드
+  if (totalHeight - scrollPosition < 50) {
+    loadMore(columnIndex)
+  }
+}
 </script>
 
 <style scoped>

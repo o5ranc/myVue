@@ -17,8 +17,8 @@ Vue 3 + TypeScript 학습용 저장소입니다. 하나의 완성된 애플리�
 
 | 구분 | 사용 기술 |
 | --- | --- |
-| 프레임워크 | Vue 3.4 (Options API / Composition API / `<script setup>` 혼용) |
-| 언어 | TypeScript 5.4, 일부 JavaScript |
+| 프레임워크 | Vue 3.4, 모든 컴포넌트를 Composition API `<script setup lang="ts">`로 작성 |
+| 언어 | TypeScript 5.4 (`.vue` 파일은 모두 TS, 쇼핑카트 스토어 모듈·목 API 등 일부 `.js`) |
 | UI | Element Plus 2.7, Bootstrap 5, 직접 작성한 CSS |
 | 라우팅 | Vue Router 4 (현재는 거의 사용하지 않음) |
 | 상태 관리 | Vuex 4 (멤버, 쇼핑카트), Pinia 2 (카운터 예제) |
@@ -50,15 +50,14 @@ node scripts/generateMembers.js   # 랜덤 멤버 300명 생성
 
 ## 화면을 바꿔 보는 방법
 
-`src/App.vue`의 `<template>`에는 테스트 화면들이 주석으로 나열되어 있고, 그중 하나만 활성화되어 있습니다. 다른 화면을 보려면 세 곳을 함께 수정합니다.
+`src/App.vue`의 `<template>`에는 테스트 화면들이 주석으로 나열되어 있고, 그중 하나만 활성화되어 있습니다. `App.vue`가 `<script setup>`이라 import한 컴포넌트는 `components` 옵션 없이 바로 쓸 수 있으므로, 두 곳만 수정하면 됩니다.
 
 1. `<template>`에서 보려는 컴포넌트 태그의 주석을 해제하고, 기존에 열려 있던 태그는 주석 처리합니다.
-2. `<script>`의 `import` 문에서 같은 컴포넌트의 주석을 해제합니다.
-3. `components` 옵션에 해당 컴포넌트 등록을 해제합니다.
+2. `<script setup>`의 `import` 문에서 같은 컴포넌트의 주석을 해제합니다.
 
-예를 들어 칸반 보드를 보려면 `<KanbanList />`, `import KanbanList ...`, `components: { KanbanList }` 세 줄을 모두 살립니다.
+예를 들어 칸반 보드를 보려면 `<KanbanList />`와 `import KanbanList ...` 두 줄을 살립니다.
 
-현재 기본값은 `ElTableTestView`입니다. 선택할 수 있는 화면 목록은 [docs/SCREENS.md](docs/SCREENS.md)에 정리되어 있습니다.
+현재 기본값은 `ElTableUiTestView`입니다. 선택할 수 있는 화면 목록은 [docs/SCREENS.md](docs/SCREENS.md)에 정리되어 있습니다.
 
 ## 디렉터리 개요
 

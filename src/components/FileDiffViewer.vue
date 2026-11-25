@@ -26,8 +26,8 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent, ref, onMounted, PropType } from 'vue'
+<script setup lang="ts">
+import { ref, onMounted } from 'vue'
 import { createTwoFilesPatch } from 'diff'
 
 interface DiffLine {
@@ -37,78 +37,67 @@ interface DiffLine {
   content: string
 }
 
-export default defineComponent({
-  name: 'FileDiffViewer',
-  props: {
-    oldContent: {
-      type: String as PropType<string>,
-      required: true,
-    },
-    newContent: {
-      type: String as PropType<string>,
-      required: true,
-    },
-    fileName: {
-      type: String as PropType<string>,
-      default: 'unnamed file',
-    },
+// withDefaults로 선택 prop의 기본값을 지정합니다.
+const props = withDefaults(
+  defineProps<{
+    oldContent: string
+    newContent: string
+    fileName?: string
+  }>(),
+  {
+    fileName: 'unnamed file',
   },
-  setup(props) {
-    const diffContainer = ref<HTMLElement | null>(null)
-    const diffLines = ref<DiffLine[]>([])
+)
 
-    const parseDiff = () => {
-      const patch = createTwoFilesPatch(props.fileName, props.fileName, props.oldContent, props.newContent)
+// 템플릿의 ref="diffContainer"와 같은 이름의 변수가 자동으로 연결됩니다.
+const diffContainer = ref<HTMLElement | null>(null)
+const diffLines = ref<DiffLine[]>([])
 
-      const lines = patch.split('\n').slice(4) // 헤더 제거
-      let oldLineNumber = 0
-      let newLineNumber = 0
+const parseDiff = () => {
+  const patch = createTwoFilesPatch(props.fileName, props.fileName, props.oldContent, props.newContent)
 
-      diffLines.value = lines.map((line: String): DiffLine => {
-        const firstChar = line.charAt(0)
-        let type = 'normal'
-        let content = line
+  const lines = patch.split('\n').slice(4) // 헤더 제거
+  let oldLineNumber = 0
+  let newLineNumber = 0
 
-        if (firstChar === '+') {
-          type = 'addition'
-          newLineNumber++
-          return {
-            type,
-            oldLineNumber: null,
-            newLineNumber,
-            content: content.substring(1),
-          }
-        } else if (firstChar === '-') {
-          type = 'deletion'
-          oldLineNumber++
-          return {
-            type,
-            oldLineNumber,
-            newLineNumber: null,
-            content: content.substring(1),
-          }
-        } else {
-          oldLineNumber++
-          newLineNumber++
-          return {
-            type,
-            oldLineNumber,
-            newLineNumber,
-            content: content.substring(1),
-          }
-        }
-      })
+  diffLines.value = lines.map((line: string): DiffLine => {
+    const firstChar = line.charAt(0)
+    let type = 'normal'
+    const content = line
+
+    if (firstChar === '+') {
+      type = 'addition'
+      newLineNumber++
+      return {
+        type,
+        oldLineNumber: null,
+        newLineNumber,
+        content: content.substring(1),
+      }
+    } else if (firstChar === '-') {
+      type = 'deletion'
+      oldLineNumber++
+      return {
+        type,
+        oldLineNumber,
+        newLineNumber: null,
+        content: content.substring(1),
+      }
+    } else {
+      oldLineNumber++
+      newLineNumber++
+      return {
+        type,
+        oldLineNumber,
+        newLineNumber,
+        content: content.substring(1),
+      }
     }
+  })
+}
 
-    onMounted(() => {
-      parseDiff()
-    })
-
-    return {
-      diffContainer,
-      diffLines,
-    }
-  },
+onMounted(() => {
+  parseDiff()
 })
 </script>
 

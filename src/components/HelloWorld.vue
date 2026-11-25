@@ -1,4 +1,4 @@
-<!-- <template>
+<template>
   <div class="hello">
     <h1>{{ msg }}</h1>
     <p>
@@ -29,17 +29,11 @@
   </div>
 </template>
 
-<script lang="ts">
-import { Options, Vue } from 'vue-class-component';
-
-@Options({
-  props: {
-    msg: String
-  }
-})
-export default class HelloWorld extends Vue {
-  msg!: string
-}
+<script setup lang="ts">
+// vue-class-component(@Options + class) 대신 <script setup> + defineProps로 작성합니다.
+defineProps<{
+  msg?: string
+}>()
 </script>
 
 <style scoped>
@@ -60,4 +54,4 @@ li {
 a {
   color: #42b983;
 }
-</style> -->
+</style>

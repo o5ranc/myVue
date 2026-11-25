@@ -19,66 +19,46 @@
   </div>
 </template>
 
-<script lang="ts">
-import { defineComponent } from 'vue'
+<script setup lang="ts">
+// <script setup>에서는 import한 컴포넌트를 components 옵션에 등록하지 않아도 템플릿에서 바로 쓸 수 있습니다.
+// 화면을 바꾸려면 아래 import 한 줄과 템플릿의 태그 한 줄만 주석을 옮기면 됩니다.
+import { ref } from 'vue'
 // import { storeToRefs } from 'pinia'
 // import { useCounterStore } from '@/stores/counter'
 // import ProductList from './components/ProductList.vue'
 // import ShoppingCart from './components/ShoppingCart.vue'
-// import TestView from './views/testViews/testeView.vue'
-import ElTableUiTestView from "./views/testViews/ElTableUiTestView.vue"
+// import TestView from './views/testViews/testView.vue'
+import ElTableUiTestView from './views/testViews/ElTableUiTestView.vue'
 // import ChartTestView from './views/testViews/ChartTestView.vue'
 // import SourceView from './views/testViews/SourceView.vue'
 // import CardListView from './views/testViews/CardListView.vue'
 // import SourceTreeView from './views/testViews/SourceTreeView.vue'
-// import KanbanList from './views/testViews/kanban/KanbanList.vue';
-// import PostitView from './views/alert/PostitView.vue';
-// import BranchLintList from './views/testViews/BranchLintList.vue';
+// import KanbanList from './views/testViews/kanban/KanbanList.vue'
+// import PostitView from './views/alert/PostitView.vue'
+// import BranchLintList from './views/testViews/BranchLintList.vue'
 // import MemberSelector from './components/MemberSelector.vue'
 // import ElTabTestView from './views/testViews/ElTabTestView.vue'
 // import StickyHeader from './views/testViews/dynamically/StickyHeader.vue'
-// import AlignTextView from './views/testViews/Align/AlignTextView.vue';
-// import SpinnerBorder from './views/testViews/SpinnerBorder.vue';
-// import SourceView from './views/testViews/SourceView.vue';
+// import AlignTextView from './views/testViews/Align/AlignTextView.vue'
+// import SpinnerBorder from './views/testViews/SpinnerBorder.vue'
 
-export default defineComponent({
-  name: 'App',
-  components: {
-    // ProductList,
-    // ShoppingCart
-    // TestView,
-    ElTableUiTestView,
-    // ElTabTestView,
-    // ChartTestView,
-    // SourceView,
-    // CardListView,
-    // SourceTreeView,
-    // KanbanList,
-    // PostitView
-    // BranchLintList
-    // MemberSelector,
-    // StickyHeader,
-    // AlignTextView,
-    // SpinnerBorder,
-    // SourceView
-  },
-  data() {
-    return {
-      isMenuOpen: true,
-      menuItems: [
-        { name: 'Home', path: '/' },
-        { name: 'Test1', path: '/test1' },
-        { name: 'Test2', path: '/test2' },
-        // 실제 파일들에 맞게 추가해주세요
-      ],
-    }
-  },
-  methods: {
-    toggleMenu() {
-      this.isMenuOpen = !this.isMenuOpen
-    },
-  },
-})
+interface MenuItem {
+  name: string
+  path: string
+}
+
+// 사이드바 메뉴용 상태 (아직 템플릿에서는 사용하지 않음)
+const isMenuOpen = ref(true)
+const menuItems = ref<MenuItem[]>([
+  { name: 'Home', path: '/' },
+  { name: 'Test1', path: '/test1' },
+  { name: 'Test2', path: '/test2' },
+  // 실제 파일들에 맞게 추가해주세요
+])
+
+function toggleMenu() {
+  isMenuOpen.value = !isMenuOpen.value
+}
 </script>
 
 <style>

@@ -4,7 +4,9 @@
 
 ## 1. 테스트 화면 (`src/views/testViews/`)
 
-### `elTableTestView.vue` — Element Plus 테이블 종합 (현재 기본 화면)
+### `elTableTestView.vue` — Element Plus 테이블 종합
+
+> 이 파일은 저장소에서 삭제되었고, `App.vue`는 현재 `ElTableUiTestView.vue`를 기본 화면으로 import합니다. 다만 `ElTableUiTestView.vue`는 아직 저장소에 커밋되어 있지 않아, 클론한 그대로는 빌드되지 않습니다.
 
 가장 크고 많이 고친 화면입니다. `el-table`로 다음을 실험합니다.
 
@@ -86,13 +88,13 @@ flex 안에서 라벨과 긴 본문을 나란히 두었을 때 줄바꿈과 넘�
 | `MemberSelector.vue` | 멤버 목록과 선택 목록을 좌우로 나눈 선택 UI. `members.json` 300명을 15개씩 무한 스크롤로 불러오고, lodash `debounce`로 검색을 지연 처리. 양쪽 목록에 각각 검색창이 있음 | `App.vue`에 주석으로 등록 |
 | `FileDiffViewer.vue` | `diff` 패키지의 `createTwoFilesPatch`로 두 텍스트를 비교해, 줄 번호 두 개와 변경 종류(추가/삭제/유지)를 표 형태로 표시 | `SourceView.vue` |
 | `InfiniteComponent.vue` | 세 개 컬럼이 각자 독립적으로 무한 스크롤되는 구조. 컬럼별 페이지 번호를 따로 관리하고 스크롤 끝에서 10개씩 추가 | `SourceView.vue` |
-| `TreeView.vue` | 자기 자신을 재귀 호출해 폴더/파일 트리를 그리는 컴포넌트. 펼침 토글은 아직 `console.log`만 하고 상태를 바꾸지 않음(Vue 3에서 `this.$set`이 없어 주석 처리된 상태) | `testViews/SourceTreeView.vue` |
+| `TreeView.vue` | 자기 자신을 재귀 호출해 폴더/파일 트리를 그리는 컴포넌트. 트리 항목 타입 `TreeItem`을 export함. 펼침 토글은 아직 `console.log`만 하고 상태를 바꾸지 않음(직접 대입 방식의 코드가 주석으로 남아 있음) | `testViews/SourceTreeView.vue` |
 | `IndexComponent.vue` | 전달받은 인덱스 값을 테두리 안에 출력하는 디버그용 최소 컴포넌트 | `SourceView.vue` |
 | `ProductList.vue` | Vuex 쇼핑카트 예제의 상품 목록. 재고가 없으면 담기 버튼 비활성화 | `App.vue`에 주석으로 등록 |
 | `ShoppingCart.vue` | Vuex 쇼핑카트 예제의 장바구니·결제. 결제는 목 API라 50% 확률로 실패 | `App.vue`에 주석으로 등록 |
-| `InputTodo.vue` | 투두 입력창. `../constant` 모듈을 import하지만 그 파일이 저장소에 없음 | 미사용 (import 실패) |
-| `List.vue` | 투두 목록. 파일 전체가 주석 처리된 참고용 코드 | 미사용 |
-| `HelloWorld.vue` | Vue CLI 기본 샘플. 템플릿이 주석 처리되어 있고 `vue-class-component`를 쓰지만 그 패키지가 설치되어 있지 않음 | 미사용 |
+| `InputTodo.vue` | 투두 입력창. `useStore()`로 `src/constant.ts`의 `ADD_TODO` mutation을 commit. `todolist` 상태를 가진 스토어 모듈이 없어 실제 동작은 하지 않음 | 미사용 |
+| `List.vue` | 투두 목록. 원래 파일 전체가 주석이던 참고용 코드를 `<script setup>`으로 살림. `InputTodo.vue`와 같은 이유로 실제 동작은 하지 않음 | 미사용 |
+| `HelloWorld.vue` | Vue CLI 기본 샘플. `vue-class-component` 대신 `defineProps`로 `msg`를 받음 | 미사용 |
 | `SourceTreeView.vue` | 빈 파일 | 미사용 |
 
 정리 후보와 동작하지 않는 코드는 [NOTES.md](NOTES.md)에 모아 두었습니다.

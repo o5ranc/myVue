@@ -18,65 +18,75 @@
   </div>
 </template>
 
-<script>
-export default {
-  data() {
-    return {
-      selected: '',
-      options: [
-        { value: 'option1', label: 'Option 1' },
-        { value: 'option2', label: 'Option 2' },
-        { value: 'option3', label: 'Option 3' },
-      ],
-      cards: [
-        {
-          id: 1,
-          title: 'List 1',
-          items: [
-            { id: 11, title: 'Card 1-1' },
-            { id: 12, title: 'Card 1-2' },
-            { id: 13, title: 'Card 1-3' },
-            { id: 14, title: 'Card 1-4' },
-          ]
-        },
-        {
-          id: 2,
-          title: 'List 2',
-          items: [
-            { id: 21, title: 'Card 2-1' },
-            { id: 22, title: 'Card 2-2' },
-            { id: 23, title: 'Card 2-3' },
-          ]
-        },
-        {
-          id: 3,
-          title: 'List 3',
-          items: [
-            { id: 31, title: 'Card 3-1' },
-            { id: 32, title: 'Card 3-2' },
-            { id: 33, title: 'Card 3-3' },
-            { id: 34, title: 'Card 3-4' },
-            { id: 35, title: 'Card 3-5' },
-          ]
-        },
-        {
-          id: 4,
-          title: 'List 4',
-          items: [
-            { id: 41, title: 'Card 4-1' },
-            { id: 42, title: 'Card 4-2' },
-          ]
-        }
-      ]
-    };
+<script setup lang="ts">
+import { ref, computed } from 'vue'
+
+interface Card {
+  id: number
+  title: string
+}
+
+interface CardColumn {
+  id: number
+  title: string
+  items: Card[]
+}
+
+interface SelectOption {
+  value: string
+  label: string
+}
+
+const selected = ref('')
+const options = ref<SelectOption[]>([
+  { value: 'option1', label: 'Option 1' },
+  { value: 'option2', label: 'Option 2' },
+  { value: 'option3', label: 'Option 3' },
+])
+
+const cards = ref<CardColumn[]>([
+  {
+    id: 1,
+    title: 'List 1',
+    items: [
+      { id: 11, title: 'Card 1-1' },
+      { id: 12, title: 'Card 1-2' },
+      { id: 13, title: 'Card 1-3' },
+      { id: 14, title: 'Card 1-4' },
+    ]
   },
-  computed: {
-    cardColumns() {
-      // cards 배열을 그대로 사용 (이미 원하는 구조로 되어있음)
-      return this.cards;
-    }
+  {
+    id: 2,
+    title: 'List 2',
+    items: [
+      { id: 21, title: 'Card 2-1' },
+      { id: 22, title: 'Card 2-2' },
+      { id: 23, title: 'Card 2-3' },
+    ]
+  },
+  {
+    id: 3,
+    title: 'List 3',
+    items: [
+      { id: 31, title: 'Card 3-1' },
+      { id: 32, title: 'Card 3-2' },
+      { id: 33, title: 'Card 3-3' },
+      { id: 34, title: 'Card 3-4' },
+      { id: 35, title: 'Card 3-5' },
+    ]
+  },
+  {
+    id: 4,
+    title: 'List 4',
+    items: [
+      { id: 41, title: 'Card 4-1' },
+      { id: 42, title: 'Card 4-2' },
+    ]
   }
-};
+])
+
+// cards 배열을 그대로 사용 (이미 원하는 구조로 되어있음)
+const cardColumns = computed(() => cards.value)
 </script>
 
 <style scoped>

@@ -16,26 +16,15 @@
   </div>
 </template>
 
-<script lang="ts">
-import KanbanItem from './KanbanItem.vue';
-import { ref } from 'vue';
+<script setup lang="ts">
+import { ref } from 'vue'
+import KanbanItem from './KanbanItem.vue'
+import type { KanbanColumn } from './types'
 
-export default {
-  name: 'KanbanList',
-  components: {
-    KanbanItem
-  },
-  setup() {
-    const kanbanLists = ref([
-      { id: 1, title: 'To Do', items: [{ title: 'aaa', type: 'A', assignName: '홍길동'}, ] },
-      { id: 2, title: 'In Progress', items: [] },
-      { id: 3, title: 'Review', items: [] },
-      { id: 4, title: 'Done', items: [] }
-    ]);
-
-    return {
-      kanbanLists
-    };
-  }
-}
+const kanbanLists = ref<KanbanColumn[]>([
+  { id: 1, title: 'To Do', items: [{ id: 1, title: 'aaa', type: 'A', assignName: '홍길동' }] },
+  { id: 2, title: 'In Progress', items: [] },
+  { id: 3, title: 'Review', items: [] },
+  { id: 4, title: 'Done', items: [] },
+])
 </script>

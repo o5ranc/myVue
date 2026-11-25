@@ -10,20 +10,27 @@
   </ul>
 </template>
 
-<script>
-import { mapState, mapActions } from 'vuex'
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useStore } from 'vuex'
 import { formatCurrency } from '@/utils/format'
 
-export default {
-  computed: mapState({
-    products: state => state.products.all
-  }),
-  methods: {
-    ...mapActions('cart', ['addProductToCart']),
-    formatCurrency,
-  },
-  created() {
-    this.$store.dispatch('products/getAllProducts')
-  }
+interface Product {
+  id: number
+  title: string
+  price: number
+  inventory: number
 }
+
+// mapState / mapActions 대신 useStore()로 스토어에 직접 접근합니다.
+const store = useStore()
+
+const products = computed<Product[]>(() => store.state.products.all)
+
+function addProductToCart(product: Product) {
+  store.dispatch('cart/addProductToCart', product)
+}
+
+// created() 훅에 있던 코드는 <script setup> 최상단에서 바로 실행하면 됩니다.
+store.dispatch('products/getAllProducts')
 </script>

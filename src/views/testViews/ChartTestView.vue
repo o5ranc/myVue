@@ -325,7 +325,7 @@ const processChartData = (tasks: any[]) => {
     if (task.projectsWithUsers && task.projectsWithUsers.length > 0) {
       const totalUsers = task.projectsWithUsers.length
 
-      task.projectsWithUsers.forEach((user, userIndex) => {
+      task.projectsWithUsers.forEach((user: any, userIndex: number) => {
         let startDate = new Date(user.wrStartDate).getTime()
         let endDate = new Date(user.wrEndDate).getTime()
 

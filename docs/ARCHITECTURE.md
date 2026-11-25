@@ -26,9 +26,9 @@ app.mount('#app')
 
 루트 컴포넌트이지만 레이아웃 역할보다 **화면 선택 스위치** 역할이 큽니다.
 
-- `<template>`에 테스트 화면 태그들이 나열되어 있고 한 개만 활성 상태입니다(현재 `ElTableTestView`).
-- `import` 문과 `components` 옵션도 같은 방식으로 주석 처리되어 있어, 화면을 바꿀 때 세 곳을 함께 수정해야 합니다.
-- `data()`에 `isMenuOpen`, `menuItems`가 있고 `<style>`에 사이드바/토글 버튼 CSS가 들어 있지만, 템플릿에 해당 마크업이 없어 **현재는 쓰이지 않는 사이드바 레이아웃의 잔재**입니다.
+- `<template>`에 테스트 화면 태그들이 나열되어 있고 한 개만 활성 상태입니다(현재 `ElTableUiTestView`).
+- `<script setup>`이라 `components` 옵션이 없고, `import` 문만 같은 방식으로 주석 처리되어 있어 화면을 바꿀 때 두 곳(태그·import)을 수정합니다.
+- `isMenuOpen`, `menuItems` ref와 `toggleMenu` 함수가 있고 `<style>`에 사이드바/토글 버튼 CSS가 들어 있지만, 템플릿에 해당 마크업이 없어 **현재는 쓰이지 않는 사이드바 레이아웃의 잔재**입니다.
 - `<router-view />`가 없습니다. 그래서 라우터로 화면을 바꾸는 흐름은 사실상 동작하지 않습니다.
 
 ## 2. 라우팅
@@ -127,12 +127,17 @@ ESLint 설정이 두 곳에 나뉘어 있고 내용도 다릅니다. ESLint 8은
 
 ## 6. 코드 스타일
 
-같은 저장소 안에 Vue 3의 세 가지 작성 방식이 모두 들어 있습니다.
+모든 `.vue` 파일은 Composition API의 `<script setup lang="ts">`로 작성되어 있습니다. (이전에는 Options API, `defineComponent` + `setup()`, `vue-class-component`가 섞여 있었고 한 번에 변환했습니다.) 스크립트 블록이 없는 `SpinnerBorder.vue`와 빈 파일인 `src/components/SourceTreeView.vue`만 예외입니다.
 
-| 방식 | 예시 |
-| --- | --- |
-| Options API | `testView.vue`, `CardListView.vue`, `TreeView.vue` |
-| `defineComponent` + `setup()` | `elTableTestView.vue`, `BranchLintList.vue`, `MemberSelector.vue` |
-| `<script setup>` | `PostitView.vue`, `ElTabTestView.vue`, `autoHeightDiv.vue` |
+자주 쓰는 패턴은 다음과 같습니다.
 
-학습용 저장소라 의도된 혼용으로 보이며, 새 화면을 만들 때는 `<script setup lang="ts">`가 가장 간결합니다.
+| 하고 싶은 것 | `<script setup>`에서의 방법 | 예시 |
+| --- | --- | --- |
+| 컴포넌트 등록 | `import`만 하면 템플릿에서 바로 사용 (`components` 옵션 불필요) | `App.vue`, `SourceView.vue` |
+| props | 타입 기반 `defineProps<{ ... }>()`, 기본값은 `withDefaults` | `FileDiffViewer.vue`, `TreeView.vue` |
+| 상태 / 계산값 | `ref`, `reactive`, `computed` (`data()` / `computed` 옵션 대신) | `MemberSelector.vue`, `CardListView.vue` |
+| 템플릿 ref | 템플릿의 `ref="이름"`과 같은 이름의 `ref()` 변수, `v-for` 안에서는 함수형 ref | `SourceView.vue`(`tableRef`), `InfiniteComponent.vue` |
+| `created()` 훅 | 스크립트 최상단에서 바로 실행 | `ProductList.vue` |
+| Vuex 사용 | `useStore()` + `computed`로 state/getters, `store.dispatch` / `store.commit` (`mapState` 등 대신) | `ProductList.vue`, `ShoppingCart.vue`, `InputTodo.vue` |
+| 재귀 컴포넌트 | 파일 이름(`TreeView`)으로 자기 자신을 참조 | `TreeView.vue` |
+| 컴포넌트 간 공유 타입 | 별도 `.ts` 파일이나 `<script setup>` 안의 `export interface` | `kanban/types.ts`, `TreeView.vue`의 `TreeItem` |
