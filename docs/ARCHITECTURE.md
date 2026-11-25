@@ -5,7 +5,7 @@
 ## 1. 앱 진입 경로
 
 ```
-public/index.html  →  src/main.ts  →  src/App.vue  →  (주석으로 선택된 테스트 화면)
+public/index.html  →  src/main.ts  →  src/App.vue  →  layouts/MainLayout.vue  →  (메뉴에서 선택한 테스트 화면)
 ```
 
 ### `src/main.ts`
@@ -24,23 +24,36 @@ app.mount('#app')
 
 ### `src/App.vue`
 
-루트 컴포넌트이지만 레이아웃 역할보다 **화면 선택 스위치** 역할이 큽니다.
+`<router-view />` 하나와 전역 기본 스타일(`#app`, `body`, `box-sizing`)만 있습니다. 어떤 화면을 그릴지는 라우터가 정합니다. (예전에는 테스트 화면 태그와 import를 주석으로 옮겨 가며 하나씩 띄우는 스위치 역할이었고, 쓰이지 않던 사이드바 상태·CSS도 이번에 정리했습니다.)
 
-- `<template>`에 테스트 화면 태그들이 나열되어 있고 한 개만 활성 상태입니다(현재 `ElTableUiTestView`).
-- `<script setup>`이라 `components` 옵션이 없고, `import` 문만 같은 방식으로 주석 처리되어 있어 화면을 바꿀 때 두 곳(태그·import)을 수정합니다.
-- `isMenuOpen`, `menuItems` ref와 `toggleMenu` 함수가 있고 `<style>`에 사이드바/토글 버튼 CSS가 들어 있지만, 템플릿에 해당 마크업이 없어 **현재는 쓰이지 않는 사이드바 레이아웃의 잔재**입니다.
-- `<router-view />`가 없습니다. 그래서 라우터로 화면을 바꾸는 흐름은 사실상 동작하지 않습니다.
+### `src/layouts/MainLayout.vue`
+
+`/` 라우트의 컴포넌트로, 앱의 메인 페이지입니다.
+
+- 왼쪽: Element Plus `el-menu`로 만든 2단 메뉴입니다. `el-sub-menu`(1단, 화면 종류) 안에 `el-menu-item`(2단, 화면)을 둡니다. `router` 속성을 켜서 항목의 `index`(전체 경로)로 바로 이동하고, `default-active`를 현재 경로에 맞춰 선택 표시를 유지합니다. 처음에는 모든 그룹을 펼쳐 둡니다.
+- 오른쪽: 상단에 `그룹 / 화면 이름`과 파일 경로(`route.meta`)를 보여 주고, 그 아래 `<router-view />`에 자식 라우트 화면을 그립니다.
+- 스크롤은 창 전체로 두고 메뉴만 `position: sticky`로 고정합니다. `StickyHeader.vue`처럼 `window` 스크롤을 감지하는 화면이 그대로 동작하게 하기 위해서입니다. 메뉴 폭은 CSS 변수 `--layout-sidebar-width`(240px)로 두었고, `position: fixed` 헤더를 쓰는 `StickyHeader.vue`가 이 값만큼 왼쪽을 비켜 섭니다.
 
 ## 2. 라우팅
 
-`src/router/index.ts` — `createWebHistory` 기반이며 라우트는 두 개뿐입니다.
+`createWebHistory` 기반의 중첩 라우트입니다. 메뉴와 라우트는 같은 목록에서 만들어집니다.
+
+| 파일 | 역할 |
+| --- | --- |
+| `src/router/menu.ts` | `screenMenu`: 그룹(1단) → 화면(2단) 목록. 화면마다 메뉴 이름(`title`), 경로 조각(`path`), 지연 로딩 컴포넌트(`component`), 파일 경로(`file`)를 적습니다. `fullPath(group, item)`가 `/그룹/화면` 경로를 만듭니다 |
+| `src/router/index.ts` | `screenMenu`를 펼쳐 `MainLayout`의 자식 라우트로 등록합니다. `title`·`group`·`file`은 `route.meta`에 들어가며, `RouteMeta` 타입을 확장해 두었습니다 |
 
 | 경로 | 컴포넌트 | 비고 |
 | --- | --- | --- |
-| `/` | `@/App.vue` | 루트 컴포넌트를 라우트 컴포넌트로 다시 지정한 형태 |
-| `/member` | `views/testViews/member/AdminMembers.vue` | 제목만 있는 빈 화면 |
+| `/` | `layouts/MainLayout.vue` | 메인 레이아웃. 자식 라우트가 오른쪽 `<router-view />`에 그려짐 |
+| `/` (자식 `''`) | `views/HomeView.vue` | 전체 화면 목록 |
+| `/<그룹>/<화면>` | `menu.ts`의 각 화면 | 예: `/viewer/chart`, `/layout/kanban`. 전체 목록은 [SCREENS.md](SCREENS.md#메뉴-구성) |
+| `/member` | → `/basic/member`로 리다이렉트 | 예전 경로 호환 |
+| 그 밖의 경로 | → `/`로 리다이렉트 | |
 
-`App.vue`에 `<router-view />`가 없으므로 라우트가 매칭되어도 화면에 그려지지 않습니다. 라우터 기반 화면 전환으로 바꾸려면 `App.vue`에 `<router-view />`를 두고, 각 테스트 화면을 라우트로 옮기는 작업이 필요합니다.
+모든 화면 컴포넌트는 `() => import(...)`로 지연 로딩되므로, 메뉴를 눌렀을 때 해당 화면의 코드만 내려받습니다. (예: 7.4만 줄짜리 `content.js`를 쓰는 `SourceView`는 그 화면을 열 때만 불러옵니다.)
+
+`vue-cli-service serve`는 history 모드용 fallback이 기본으로 켜져 있어 `/viewer/chart` 같은 주소로 새로고침해도 됩니다. `dist/`를 정적 서버에 올릴 때는 모든 경로를 `index.html`로 돌려주는 설정이 필요합니다.
 
 ## 3. 상태 관리
 
@@ -133,7 +146,7 @@ ESLint 설정이 두 곳에 나뉘어 있고 내용도 다릅니다. ESLint 8은
 
 | 하고 싶은 것 | `<script setup>`에서의 방법 | 예시 |
 | --- | --- | --- |
-| 컴포넌트 등록 | `import`만 하면 템플릿에서 바로 사용 (`components` 옵션 불필요) | `App.vue`, `SourceView.vue` |
+| 컴포넌트 등록 | `import`만 하면 템플릿에서 바로 사용 (`components` 옵션 불필요) | `SourceView.vue` |
 | props | 타입 기반 `defineProps<{ ... }>()`, 기본값은 `withDefaults` | `FileDiffViewer.vue`, `TreeView.vue` |
 | 상태 / 계산값 | `ref`, `reactive`, `computed` (`data()` / `computed` 옵션 대신) | `MemberSelector.vue`, `CardListView.vue` |
 | 템플릿 ref | 템플릿의 `ref="이름"`과 같은 이름의 `ref()` 변수, `v-for` 안에서는 함수형 ref | `SourceView.vue`(`tableRef`), `InfiniteComponent.vue` |

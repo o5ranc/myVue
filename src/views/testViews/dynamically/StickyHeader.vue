@@ -86,7 +86,8 @@ onUnmounted(() => {
 .sticky-header {
   position: fixed;
   top: 0;
-  left: 0;
+  /* MainLayout 안에서는 왼쪽 메뉴 폭만큼 비켜 섭니다 (단독으로 쓰면 0) */
+  left: var(--layout-sidebar-width, 0);
   right: 0;
   z-index: 1000;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);

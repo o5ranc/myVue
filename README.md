@@ -3,7 +3,7 @@
 Vue 3 + TypeScript 학습용 저장소입니다. 하나의 완성된 애플리케이션이 아니라, **다양한 화면 표시 방식과 UI 패턴을 하나씩 만들어 보고 확인하는 실험장**입니다.
 
 - Element Plus 테이블/탭, ECharts 차트, CodeMirror 에디터, 칸반 보드, 무한 스크롤, Sticky 헤더, CSS 스피너 등 주제별 테스트 화면이 `src/views/testViews/` 아래에 쌓여 있습니다.
-- 화면 전환은 라우터가 아니라 `src/App.vue`에서 **보고 싶은 컴포넌트의 주석을 해제하는 방식**으로 합니다. 자세한 내용은 [화면을 바꿔 보는 방법](#화면을-바꿔-보는-방법)을 참고하세요.
+- 앱을 열면 **왼쪽에 종류별 2단 메뉴, 오른쪽에 선택한 화면**이 나오는 메인 레이아웃이 뜹니다. 화면 목록은 `src/router/menu.ts` 한 곳에서 관리합니다. 자세한 내용은 [화면을 보는 방법](#화면을-보는-방법)을 참고하세요.
 
 ## 문서
 
@@ -20,7 +20,7 @@ Vue 3 + TypeScript 학습용 저장소입니다. 하나의 완성된 애플리�
 | 프레임워크 | Vue 3.4, 모든 컴포넌트를 Composition API `<script setup lang="ts">`로 작성 |
 | 언어 | TypeScript 5.4 (`.vue` 파일은 모두 TS, 쇼핑카트 스토어 모듈·목 API 등 일부 `.js`) |
 | UI | Element Plus 2.7, Bootstrap 5, 직접 작성한 CSS |
-| 라우팅 | Vue Router 4 (현재는 거의 사용하지 않음) |
+| 라우팅 | Vue Router 4 (메인 레이아웃 + 중첩 라우트로 화면 전환) |
 | 상태 관리 | Vuex 4 (멤버, 쇼핑카트), Pinia 2 (카운터 예제) |
 | 차트 | ECharts 5 (실제 사용). ApexCharts도 설치되어 있으나 미사용 |
 | 에디터·뷰어 | CodeMirror 6, CKEditor 5, Quill, TinyMCE, `diff` |
@@ -48,24 +48,39 @@ Node.js 18 이상을 권장합니다.
 node scripts/generateMembers.js   # 랜덤 멤버 300명 생성
 ```
 
-## 화면을 바꿔 보는 방법
+## 화면을 보는 방법
 
-`src/App.vue`의 `<template>`에는 테스트 화면들이 주석으로 나열되어 있고, 그중 하나만 활성화되어 있습니다. `App.vue`가 `<script setup>`이라 import한 컴포넌트는 `components` 옵션 없이 바로 쓸 수 있으므로, 두 곳만 수정하면 됩니다.
+`npm run serve`로 띄우면 메인 레이아웃(`src/layouts/MainLayout.vue`)이 나옵니다.
 
-1. `<template>`에서 보려는 컴포넌트 태그의 주석을 해제하고, 기존에 열려 있던 태그는 주석 처리합니다.
-2. `<script setup>`의 `import` 문에서 같은 컴포넌트의 주석을 해제합니다.
+- 왼쪽 메뉴는 2단입니다. 1단은 화면 종류(Element Plus, 차트 · 코드 뷰어, 레이아웃 · CSS, 알림, 기본 · 상태 관리), 2단은 각 화면입니다.
+- 항목을 누르면 주소가 `/viewer/chart`처럼 바뀌고, 오른쪽 영역(`<router-view />`)에 해당 화면이 표시됩니다. 오른쪽 위에는 지금 보는 화면의 파일 경로가 나옵니다.
+- 첫 화면(`/`)은 전체 화면 목록입니다. 주소를 직접 입력하거나 새로고침해도 같은 화면이 열립니다.
 
-예를 들어 칸반 보드를 보려면 `<KanbanList />`와 `import KanbanList ...` 두 줄을 살립니다.
+### 화면을 추가하는 방법
 
-현재 기본값은 `ElTableUiTestView`입니다. 선택할 수 있는 화면 목록은 [docs/SCREENS.md](docs/SCREENS.md)에 정리되어 있습니다.
+`src/router/menu.ts`의 알맞은 그룹 `children`에 한 줄을 추가하면 메뉴와 라우트가 함께 생깁니다.
+
+```ts
+{
+  title: '새 화면',                 // 메뉴 이름
+  path: 'new-screen',              // → /그룹경로/new-screen
+  component: () => import('@/views/testViews/NewScreen.vue'),
+  file: 'views/testViews/NewScreen.vue',
+},
+```
+
+새 종류가 필요하면 `screenMenu` 배열에 그룹을 하나 더 추가합니다. 각 화면의 설명은 [docs/SCREENS.md](docs/SCREENS.md)에 정리되어 있습니다.
+
+> `ElTableUiTestView.vue`(Element Plus 테이블 종합)는 아직 저장소에 커밋되어 있지 않아 메뉴에서 빠져 있습니다. 파일을 커밋한 뒤 `menu.ts`의 해당 항목 주석을 해제하면 메뉴에 나타납니다.
 
 ## 디렉터리 개요
 
 ```
 src/
-├── App.vue              # 루트 컴포넌트 겸 화면 선택 스위치
+├── App.vue              # 루트 컴포넌트 (<router-view />만 둠)
+├── layouts/             # 메인 레이아웃 (왼쪽 2단 메뉴 + 오른쪽 화면 영역)
 ├── main.ts              # 앱 부트스트랩 (router + Element Plus 등록)
-├── router/              # Vue Router 설정 (/, /member)
+├── router/              # Vue Router 설정, menu.ts = 메뉴·라우트 목록
 ├── views/
 │   ├── testViews/       # 주제별 테스트 화면
 │   ├── alert/           # 포스트잇 스타일 알림 화면
